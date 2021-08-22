@@ -2,56 +2,93 @@
 
 # - Base Packages -
 amd-ucode
-intel-ucode
 base
+dhcpcd
+efibootmgr
+intel-ucode
 linux
 linux-firmware
 sudo
-
-git
-grub
-efibootmgr
-polkit
-lightdm
-lightdm-gtk-greeter
-xorg
 zsh
-zsh-completions
-dhcpcd
-ufw
+
+# - Xorg -
+xorg-server
+xorg-xkill
+xorg-xrandr
+
+# - Nvidia Drivers -
 nvidia
 nvidia-utils
 lib32-nvidia-utils
-picom
-i3
-kitty
-neovim
-firefox
-base-devel
+
+# - LightDM -
+lightdm
+lightdm-gtk-greeter
+
+# - Desktop Environment -
 dmenu
-feh
-steam
+i3-gaps
+picom
+polybar
+rofi
+
+# - Programs -
+
+# Audio
+pulseaudio
+
+# Files
+p7zip
+ranger
+
+# Fonts
 lib32-fontconfig
 ttf-liberation
 wqy-zenhei
-mpv
-youtube-dl
+
+# Gaming
+steam
 discord
-gimp
-blender
-keepassxc
-ranger
-vscode
-calcurse
-ntfs-3g
-pulseaudio
+
+# Images
+feh
+
+# Multimedia
+mpd
+mpv
+ncmpcpp
+youtube-dl
+
+# Network / Internet
+firefox
+qbittorrent
+ufw
+
+# System
+base-devel
+git
+polkit
 jre7-openjdk
 go
-mpd
-ncmpcpp
-p7zip
-obs-studio
-newsboat
-qbittorrent
+ntfs-3g
 python3
 python-pip
+
+# Text Editors
+neovim
+vscode
+
+# Terminal
+kitty
+zsh-completions
+
+# Utilities
+blender
+calcurse
+gimp
+keepassxc
+newsboat
+obs-studio
+
+# - Grub -
+grub
