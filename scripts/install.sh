@@ -143,7 +143,7 @@ curl -L $rawgiturl/etc/pacman.conf -o /etc/pacman.conf
 # Install pacstrap packages
 curl -L $rawgiturl/packages -o packages
 sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
-pacstrap /mnt < packages
+pacstrap /mnt - < packages
 
 # Generate the fstab file to save mounted drives
 genfstab -U /mnt > /mnt/etc/fstab
