@@ -6,15 +6,11 @@ intel-ucode
 base
 linux
 linux-firmware
-
-
-
 sudo
+
 git
 grub
 efibootmgr
-amd-ucode
-intel-ucode
 polkit
 lightdm
 lightdm-gtk-greeter
