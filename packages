@@ -3,12 +3,14 @@
 # - Base Packages -
 amd-ucode
 base
+base-devel
 dhcpcd
 efibootmgr
 intel-ucode
 linux
 linux-firmware
-sudo
+ntfs-3g
+polkit
 zsh
 
 # - Xorg -
@@ -65,12 +67,9 @@ qbittorrent
 ufw
 
 # System
-base-devel
 git
-polkit
 jre7-openjdk
 go
-ntfs-3g
 python3
 python-pip
 

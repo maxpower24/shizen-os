@@ -2,9 +2,8 @@
 username=$1
 hostname=$2
 installssh=$3
-gituser=$4
-gitrepo=$5
-gitbranch=$6
+gitrepo=$4
+gitbranch=$5
 homedir="/home/$username"
 
 # Set the time zone
@@ -45,7 +44,7 @@ mkdir $homedir/vids
 
 # Clone dotfiles repo
 dotfiles="$homedir/dotfiles"
-git clone -b $gitbranch https://github.com/$gituser/$gitrepo $dotfiles
+git clone -b $gitbranch https://github.com/$gitrepo $dotfiles
 
 # Copy config and other dotfile data
 config="$dotfiles/config"

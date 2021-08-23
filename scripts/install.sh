@@ -7,13 +7,18 @@
 # It allows for input so I can adapt to each device but it's written to fit my needs so I don't recommend using it without reading through it first.
 # Eventually I might create an archiso with calamares to replace this process.
 
+## ANSI Colors (FG & BG)
+RED="$(printf '\033[31m')"  GREEN="$(printf '\033[32m')"  ORANGE="$(printf '\033[33m')"  BLUE="$(printf '\033[34m')"
+MAGENTA="$(printf '\033[35m')"  CYAN="$(printf '\033[36m')"  WHITE="$(printf '\033[37m')" BLACK="$(printf '\033[30m')"
+REDBG="$(printf '\033[41m')"  GREENBG="$(printf '\033[42m')"  ORANGEBG="$(printf '\033[43m')"  BLUEBG="$(printf '\033[44m')"
+MAGENTABG="$(printf '\033[45m')"  CYANBG="$(printf '\033[46m')"  WHITEBG="$(printf '\033[47m')" BLACKBG="$(printf '\033[40m')"
+
 # Set static variables
 username='maxpower'
 errorlog=$'Errors:\n'
-gituser="maxpower24"
-gitrepo="shizen-os"
+gitrepo="maxpower24/shizen-os"
 gitbranch="main"
-rawgiturl="https://raw.githubusercontent.com/$gituser/$gitrepo/$gitbranch"
+rawgiturl="https://raw.githubusercontent.com/$gitrepo/$gitbranch"
 
 # Welcome message and list connected disks and sizes
 echo -e "\nWelcome $username...\n"
@@ -152,7 +157,7 @@ genfstab -U /mnt > /mnt/etc/fstab
 # Change root and run setup script
 curl -L $rawgiturl/scripts/rootinstall.sh -o /mnt/rootinstall.sh
 chmod +x /mnt/rootinstall.sh
-arch-chroot /mnt ./rootinstall.sh $username $hostname $installssh $gituser $gitrepo $gitbranch
+arch-chroot /mnt ./rootinstall.sh $username $hostname $installssh $gitrepo $gitbranch
 rm /mnt/rootinstall.sh
 
 # Print errors and check for reboot
