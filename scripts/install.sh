@@ -28,7 +28,7 @@ main () {
     elif [[ $reinstall == true ]]; then
         wipe_disks
     fi
-    #installer
+    installer
 
     # Print errors and check for reboot
     while [[ $REPLY != [YyNn]* ]]; do
@@ -42,15 +42,15 @@ main () {
 banner () {
     clear
     cat <<- _EOF_
-		${CYAN}┌─────────────────────────────────────┐
+		${GREEN}┌─────────────────────────────────────┐
 		│░░░█▀▀░█░█░█░▀▀█░█▀▀░█▖█░░░█▀█░█▀▀░░░│
 		│░░░▀▀█░█▀█░█░▄▀ ░█▀▀░█▝█░░░█░█░▀▀█░░░│
 		│░░░▀▀▀░▀░▀░▀░▀▀▀░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░░░│
 		└─────────────────────────────────────┘
-		${GREEN}[*] ${ORANGE}By: Max Power
-		${GREEN}[*] ${ORANGE}Github: @maxpower24
-		${GREEN}[*] ${ORANGE}Repo: ${git_repo}
-		${GREEN}[*] ${ORANGE}Branch: ${git_branch}
+		${ORANGE}[*] ${CYAN}By: Max Power
+		${ORANGE}[*] ${CYAN}Github: @maxpower24
+		${ORANGE}[*] ${CYAN}Repo: ${git_repo}
+		${ORANGE}[*] ${CYAN}Branch: ${git_branch}
 
 		Welcome...
 
@@ -184,7 +184,7 @@ installer () {
     # Change root and run setup script
     curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
     chmod +x /mnt/rootinstall.sh
-    arch-chroot /mnt ./rootinstall.sh $username $hostname $raw_git_url $install_ssh
+    #arch-chroot /mnt ./rootinstall.sh $username $hostname $raw_git_url $install_ssh
     rm /mnt/rootinstall.sh
 }
 
