@@ -13,159 +13,178 @@ MAGENTA="$(printf '\033[35m')"  CYAN="$(printf '\033[36m')"  WHITE="$(printf '\0
 REDBG="$(printf '\033[41m')"  GREENBG="$(printf '\033[42m')"  ORANGEBG="$(printf '\033[43m')"  BLUEBG="$(printf '\033[44m')"
 MAGENTABG="$(printf '\033[45m')"  CYANBG="$(printf '\033[46m')"  WHITEBG="$(printf '\033[47m')" BLACKBG="$(printf '\033[40m')"
 
-# Set static variables
-username='maxpower'
-errorlog=$'Errors:\n'
-gitrepo="maxpower24/shizen-os"
-gitbranch="main"
-rawgiturl="https://raw.githubusercontent.com/$gitrepo/$gitbranch"
+# Set global variables
+git_repo="maxpower24/shizen-os"
+git_branch="main"
+raw_git_url="https://raw.githubusercontent.com/$git_repo/$git_branch"
+install_ssh=false
+reinstall=false
 
-# Welcome message and list connected disks and sizes
-echo -e "\nWelcome $username...\n"
-echo 'Connected disks: '
-parted -l | grep 'Disk /' | cut -d " " -f 2,3
+main () {
+    banner
+    var_input
+    if [[ $reinstall == false ]]; then
+        prep_disks
+    elif [[ $reinstall == true ]]; then
+        wipe_disks
+    fi
+    install
 
-# While loop for selecting and confirming primary/secondary disks and if new partition tables are needed
-retry=true
-while $retry
-do
-    echo
-    PS3=' Please enter the primary disk: '
-    disks=$(sudo parted -l | grep "Disk /" | cut -d ' ' -f 2 | sed 's/.$//')
-    choices=( $disks )
-    select answer in "${choices[@]}"
-    do
-        for choice in "${choices[@]}"
-        do
-            if [[ $choice == $answer ]]
-            then
-                primdisk=$choice
-                break 2
+    # Print errors and check for reboot
+    while [[ $REPLY != [YyNn]* ]]; do
+        read -p "Installation complete, reboot now (y/n)?"
+        if [[ $REPLY == [Yy]* ]]; then
+            reboot
+        fi
+    done
+}
+
+banner () {
+    clear
+    cat <<- _EOF_
+		${CYAN}┌─────────────────────────────────────┐
+		│░░░█▀▀░█░█░█░▀▀█░█▀▀░█▖█░░░█▀█░█▀▀░░░│
+		│░░░▀▀█░█▀█░█░▄▀ ░█▀▀░█▝█░░░█░█░▀▀█░░░│
+		│░░░▀▀▀░▀░▀░▀░▀▀▀░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░░░│
+		└─────────────────────────────────────┘
+		${GREEN}[*] ${ORANGE}By: Max Power
+		${GREEN}[*] ${ORANGE}Github: @maxpower24
+		${GREEN}[*] ${ORANGE}Repo: ${git_repo}
+		${GREEN}[*] ${ORANGE}Branch: ${git_branch}
+
+		Welcome...
+
+	_EOF_
+}
+
+var_input () {
+    local retry=true
+    local answer=""
+    local line=""
+    local disk=""
+    local disks=()
+    local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
+
+    while $retry; do
+        read -p 'Enter username: ' username
+        read -p 'Enter hostname: ' hostname
+
+        for line in ${lines[@]}; do
+            disk=$(echo $line | sed 's/:/: /g')
+            disks+=("$disk")
+        done
+
+        PS3='Select disk to install root dir on: '
+        select answer in "${disks[@]}"; do
+            root_disk=$(echo $answer | cut -d ' ' -f 1 | sed 's/.$//')
+            unset 'disks[REPLY-1]'
+            break
+        done
+
+        PS3='Select disk to install home dir on: '
+        select answer in "${disks[@]}"; do
+            home_disk=$(echo $answer | cut -d ' ' -f 1 | sed 's/.$//')
+            break
+        done
+
+        while [[ $REPLY != [YyNn]* ]]; do
+            read -p 'Reinstall from existing Arch install (y/n)? ' 
+            if [[ $REPLY == [Yy]* ]]; then
+                reinstall=true
+            fi
+        done
+        unset REPLY
+
+        while [[ $REPLY != [YyNn]* ]]; do
+            read -p 'Install OpenSSH server (y/n)? ' 
+            if [[ $REPLY == [Yy]* ]]; then
+                install_ssh=true
+            fi
+        done
+        unset REPLY
+
+        echo
+        echo "Username: $username"
+        echo "Hostname: $hostname"
+        echo "Install root dir on: $root_disk"
+        echo "Install home dir on: $home_disk"
+        echo "Reinstall: $reinstall"
+        echo "Install OpenSSH: $install_ssh"
+        echo
+
+        while [[ $REPLY != [YyNn]* ]]; do
+            read -p "Are these settings correct (y/n)? "
+            if [[ $REPLY == [Yy]* ]]; then
+                retry=false
             fi
         done
     done
+}
 
-    echo
-    PS3=' Please enter the secondary disk: '
-    choices=( "${choices[@]/$primdisk}" )
-    select answer in ${choices[@]}
-    do
-        for choice in ${choices[@]}
-        do
-            if [[ $choice == $answer ]]
-            then
-                secdisk=$choice
-                break 2
-            fi
-        done
-    done
-
-    newpart=false
-    echo
-    read -p 'Do you need to create new parition tables (y/n)? ' -n 1 -r
-    echo
-    if [[ $REPLY == [Yy]* ]]
-    then
-        newpart=true
-    fi
-
-    installssh=false
-    echo
-    read -p 'Install OpenSSH server (y/n)? ' -n 1 -r
-    echo
-    if [[ $REPLY == [Yy]* ]]
-    then
-        installssh=true
-    fi
-
-    echo
-    read -p 'Enter hostname: ' hostname
-
-    echo
-    echo "Primary disk: $primdisk"
-    echo "Secondary disk: $secdisk"
-    echo "New partition table: $newpart"
-    echo "Hostname: $hostname"
-    echo "Install OpenSSH server: $installssh"
-    echo "Git branch: $gitbranch"
-    echo
-
-    read -p "Are these settings correct (y/n)? " -n 1 -r
-    echo
-    if [[ $REPLY == [Yy]* ]]
-    then
-        retry=false
-    fi
-done
-
-# Partition the drives for UEFI on GPT.
-if $newpart
-then
-    parted -s -a optimal $primdisk \
+prep_disks () {
+    # Partition the drives for UEFI on GPT.
+    parted -s -a optimal $root_disk \
         mklabel gpt \
         mkpart "'"'"EFI system partition"'"'" fat32 1MiB 521MiB \
         mkpart "'"'"root partition"'"'" ext4 521MiB 100% \
         set 1 esp on
 
-    parted -s -a optimal $secdisk \
+    parted -s -a optimal $home_disk \
         mklabel gpt \
         mkpart "'"'"home partition"'"'" ext4 0% 100%
-fi
 
-# Assign partition numbers
-if [[ $primdisk == *nvme* ]]
-then
-    primdisk=$primdisk'p'
-elif [[ $secdisk == *nvme* ]]
-then
-    secdisk=$secdisk'p'
-fi
+    # Assign partition numbers
+    if [[ $root_disk == *nvme* ]]; then
+        root_disk=$root_disk'p'
+    elif [[ $home_disk == *nvme* ]]; then
+        home_disk=$home_disk'p'
+    fi
+    efipart=$root_disk'1'
+    rootpart=$root_disk'2'
+    homepart=$home_disk'1'
 
-efipart=$primdisk'1'
-rootpart=$primdisk'2'
-homepart=$secdisk'1'
+    # Format the partitions
+    mkfs.fat -F 32 $efipart
+    mkfs.ext4 $rootpart
+    mkfs.ext4 $homepart
 
-# Format the partitions
-mkfs.fat -F 32 $efipart
-mkfs.ext4 $rootpart
-mkfs.ext4 $homepart
+    # Make directories and mount the new partitions on "/"", "/efi" and "/home"
+    mount $rootpart /mnt
+    mkdir /mnt/efi /mnt/home
+    mount $efipart /mnt/efi
+    mount $homepart /mnt/home
+}
 
-# Make directories and mount the new partitions on "/"", "/efi" and "/home"
-mount $rootpart /mnt
-mkdir /mnt/efi /mnt/home
-mount $efipart /mnt/efi
-mount $homepart /mnt/home
+wipe_disks () {
+    echo "in progress"
+}
 
-# Update the system clock
-timedatectl set-ntp true
+install () {
+    # Update the system clock
+    timedatectl set-ntp true
 
-# Copy the mirror list
-curl -L $rawgiturl/etc/pacman.d/mirrorlist -o /etc/pacman.d/mirrorlist
+    # Copy the mirror list
+    curl -L $raw_git_url/etc/pacman.d/mirrorlist -o /etc/pacman.d/mirrorlist
 
-# Enable multilib repo in live environment for 32-bit packages
-curl -L $rawgiturl/etc/pacman.conf -o /etc/pacman.conf
+    # Enable multilib repo in live environment for 32-bit packages
+    curl -L $raw_git_url/etc/pacman.conf -o /etc/pacman.conf
 
-# Install pacstrap packages
-curl -L $rawgiturl/packages -o packages
-sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
-read -p "Press enter to continue"
-pacstrap /mnt - < packages
+    # Install pacstrap packages
+    curl -L $raw_git_url/packages -o packages
+    if $install_ssh; then
+        echo "openssh"
+    sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
+    read -p "Press enter to continue"
+    pacstrap /mnt - < packages
 
-# Generate the fstab file to save mounted drives
-genfstab -U /mnt > /mnt/etc/fstab
+    # Generate the fstab file to save mounted drives
+    genfstab -U /mnt > /mnt/etc/fstab
 
-# Change root and run setup script
-curl -L $rawgiturl/scripts/rootinstall.sh -o /mnt/rootinstall.sh
-chmod +x /mnt/rootinstall.sh
-arch-chroot /mnt ./rootinstall.sh $username $hostname $installssh $gitrepo $gitbranch
-rm /mnt/rootinstall.sh
+    # Change root and run setup script
+    curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
+    chmod +x /mnt/rootinstall.sh
+    arch-chroot /mnt ./rootinstall.sh $username $hostname $raw_git_url $install_ssh
+    rm /mnt/rootinstall.sh
+}
 
-# Print errors and check for reboot
-echo
-echo "$errorlog"
-read -p "Installation complete, reboot now (y/n)?" -n 1 -r
-echo
-if [[ $REPLY == [Yy]* ]]
-then
-    reboot
-fi
+main

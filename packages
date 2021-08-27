@@ -63,6 +63,7 @@ youtube-dl
 
 # Network / Internet
 firefox
+networkmanager
 qbittorrent
 ufw
 

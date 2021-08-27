@@ -53,8 +53,9 @@ cp -r "$dotfiles/dotfiles/." $homedir
 
 # Enable services
 systemctl enable lightdm
-systemctl enable dhcpcd
+systemctl enable NetworkManager
 systemctl enable ufw
+#systemctl enable dhcpcd
 
 # SSH for testing
 if [[ $installssh == true ]]
