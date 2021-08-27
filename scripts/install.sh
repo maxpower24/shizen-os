@@ -157,7 +157,6 @@ wipe_disks () {
     mount $efi_part /mnt/efi
     mount $home_part /mnt/home
     cd /mnt && rm -r *
-    #mkdir /mnt/efi /mnt/home
 }
 
 installer () {
@@ -173,7 +172,7 @@ installer () {
     # Install pacstrap packages
     curl -L $raw_git_url/packages -o packages
     if $install_ssh; then
-        echo "\nopenssh" >> packages
+        echo -e "\nopenssh" >> packages
     fi
     sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
     sleep 2
