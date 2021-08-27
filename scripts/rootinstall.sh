@@ -61,7 +61,7 @@ if $install_ssh; then
 fi
 
 # Change ownership for all contents of home folder
-chown -R $username:$username $homedir
+chown -R $username:$username $home_dir
 
 # Exit chroot
 echo
