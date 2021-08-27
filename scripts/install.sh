@@ -184,7 +184,7 @@ installer () {
     # Change root and run setup script
     curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
     chmod +x /mnt/rootinstall.sh
-    #arch-chroot /mnt ./rootinstall.sh $username $hostname $raw_git_url $install_ssh
+    arch-chroot /mnt ./rootinstall.sh $username $hostname $raw_git_url $install_ssh
     rm /mnt/rootinstall.sh
 }
 
