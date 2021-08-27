@@ -11,3 +11,8 @@ sudo ufw default deny incoming
 sudo ufw allow ssh
 sudo ufw default allow outgoing
 sudo ufw enable
+
+cat <<- _EOF_
+    To Do:
+    - Install VSCode extensions.    
+_EOF_
