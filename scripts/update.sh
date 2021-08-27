@@ -4,7 +4,5 @@ origin="https://github.com/maxpower24/shizen-os.git"
 cd $local_repo && git init && git fetch $origin && git checkout -b main $origin
 
 # Copy config and other dotfile data
-cp -r "$local_repo/wallpapers" ~/pics
-cp -r "$local_repo/dotfiles/." ~
-cp "$local_repo/scripts/update.sh" ~/update.sh
-chmod +x ~/update.sh
+cp -r $local_repo/wallpapers ~/pics
+cp -r $local_repo/dotfiles/. ~
