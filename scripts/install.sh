@@ -172,7 +172,8 @@ install () {
     # Install pacstrap packages
     curl -L $raw_git_url/packages -o packages
     if $install_ssh; then
-        echo "openssh"
+        echo "openssh" >> packages
+    fi
     sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
     read -p "Press enter to continue"
     pacstrap /mnt - < packages
