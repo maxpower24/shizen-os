@@ -119,6 +119,10 @@ var_input () {
             fi
         done
     done
+
+    echo
+    echo "${ORANGE}[*] ${GREEN}Installation started...${WHITE}"
+    echo
 }
 
 prep_disks () {
