@@ -28,7 +28,7 @@ main () {
     elif [[ $reinstall == true ]]; then
         wipe_disks
     fi
-    install
+    #installer
 
     # Print errors and check for reboot
     while [[ $REPLY != [YyNn]* ]]; do
@@ -159,7 +159,7 @@ wipe_disks () {
     echo "in progress"
 }
 
-install () {
+installer () {
     # Update the system clock
     timedatectl set-ntp true
 
