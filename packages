@@ -31,7 +31,6 @@ lightdm-gtk-greeter
 dmenu
 i3-gaps
 picom
-polybar
 rofi
 
 # - Programs -

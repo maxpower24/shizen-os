@@ -4,7 +4,7 @@ git clone https://aur.archlinux.org/yay.git ~/temp/yay
 ( cd ~/temp/yay && makepkg -i )
 
 # Install yay packages
-yay -S protonvpn unityhub code-marketplace
+yay -S protonvpn unityhub code-marketplace polybar
 
 # Firewall config
 sudo ufw default deny incoming

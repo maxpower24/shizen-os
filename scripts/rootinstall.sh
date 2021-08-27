@@ -1,10 +1,10 @@
 # Get piped variables and set static ones
 username=$1
 hostname=$2
-installssh=$3
-gitrepo=$4
-gitbranch=$5
-homedir="/home/$username"
+git_repo=$3
+git_branch=$4
+install_ssh=$5
+home_dir="/home/$username"
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
@@ -32,35 +32,31 @@ grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Create home folders
-mkdir $homedir/audio
-mkdir $homedir/bin
-mkdir $homedir/docs
-mkdir $homedir/downloads
-mkdir $homedir/games
-mkdir $homedir/pics
-mkdir $homedir/source
-mkdir $homedir/temp
-mkdir $homedir/vids
+mkdir $home_dir/audio
+mkdir $home_dir/bin
+mkdir $home_dir/docs
+mkdir $home_dir/downloads
+mkdir $home_dir/games
+mkdir $home_dir/pics
+mkdir $home_dir/source
+mkdir $home_dir/temp
+mkdir $home_dir/vids
 
 # Clone dotfiles repo
-dotfiles="$homedir/dotfiles"
-git clone -b $gitbranch https://github.com/$gitrepo $dotfiles
+local_repo="$home_dir/shizen-os"
+git clone -b $git_branch https://github.com/$git_repo $local_repo
 
 # Copy config and other dotfile data
-config="$dotfiles/config"
-cp -r "$dotfiles/wallpapers" $homedir/pics
-cp -r "$dotfiles/dotfiles/." $homedir
+cp -r "$local_repo/wallpapers" $home_dir/pics
+cp -r "$local_repo/dotfiles/." $home_dir
 
 # Enable services
 systemctl enable lightdm
 systemctl enable NetworkManager
 systemctl enable ufw
-#systemctl enable dhcpcd
 
 # SSH for testing
-if [[ $installssh == true ]]
-then
-    pacman -S --noconfirm openssh
+if $install_ssh; then
     systemctl enable sshd
 fi
 

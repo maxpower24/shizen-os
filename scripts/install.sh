@@ -137,30 +137,27 @@ prep_disks () {
         mklabel gpt \
         mkpart "'"'"home partition"'"'" ext4 0% 100%
 
-    # Assign partition numbers
-    if [[ $root_disk == *nvme* ]]; then
-        root_disk=$root_disk'p'
-    elif [[ $home_disk == *nvme* ]]; then
-        home_disk=$home_disk'p'
-    fi
-    efipart=$root_disk'1'
-    rootpart=$root_disk'2'
-    homepart=$home_disk'1'
+    get_partitions
 
     # Format the partitions
-    mkfs.fat -F 32 $efipart
-    mkfs.ext4 $rootpart
-    mkfs.ext4 $homepart
+    mkfs.fat -F 32 $efi_part
+    mkfs.ext4 $root_part
+    mkfs.ext4 $home_part
 
     # Make directories and mount the new partitions on "/"", "/efi" and "/home"
-    mount $rootpart /mnt
+    mount $root_part /mnt
     mkdir /mnt/efi /mnt/home
-    mount $efipart /mnt/efi
-    mount $homepart /mnt/home
+    mount $efi_part /mnt/efi
+    mount $home_part /mnt/home
 }
 
 wipe_disks () {
-    echo "in progress"
+    get_partitions
+    mount $root_part /mnt
+    mount $efi_part /mnt/efi
+    mount $home_part /mnt/home
+    cd /mnt && rm -r *
+    #mkdir /mnt/efi /mnt/home
 }
 
 installer () {
@@ -176,10 +173,10 @@ installer () {
     # Install pacstrap packages
     curl -L $raw_git_url/packages -o packages
     if $install_ssh; then
-        echo "openssh" >> packages
+        echo "\nopenssh" >> packages
     fi
     sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
-    read -p "Press enter to continue"
+    sleep 2
     pacstrap /mnt - < packages
 
     # Generate the fstab file to save mounted drives
@@ -188,8 +185,20 @@ installer () {
     # Change root and run setup script
     curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
     chmod +x /mnt/rootinstall.sh
-    arch-chroot /mnt ./rootinstall.sh $username $hostname $raw_git_url $install_ssh
+    arch-chroot /mnt ./rootinstall.sh $username $hostname $git_repo $git_branch $install_ssh
     rm /mnt/rootinstall.sh
+}
+
+get_partitions () {
+    # Assign partition numbers
+    if [[ $root_disk == *nvme* ]]; then
+        root_disk=$root_disk'p'
+    elif [[ $home_disk == *nvme* ]]; then
+        home_disk=$home_disk'p'
+    fi
+    efi_part=$root_disk'1'
+    root_part=$root_disk'2'
+    home_part=$home_disk'1'
 }
 
 main
