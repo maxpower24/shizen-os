@@ -187,6 +187,10 @@ for_window [class=".*"] border pixel 2
 # Set gaps
 gaps inner 10
 
+smart_borders on
+smart_borders no_gaps
+border_radius 2
+
 # Set colours
 # class                 border  backgr. text    indicator child_border
 client.focused          #fabd2f #285577 #ffffff #fabd2f   #fabd2f
