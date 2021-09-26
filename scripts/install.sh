@@ -64,7 +64,7 @@ var_input () {
     local line=""
     local disk=""
     local disks=()
-    local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
+    #local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
 
     while $retry; do
         read -p 'Enter username: ' username
