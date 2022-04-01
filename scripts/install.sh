@@ -7,6 +7,8 @@
 # It allows for input so I can adapt to each device but it's written to fit my needs so I don't recommend using it without reading through it first.
 # Eventually I might create an archiso with calamares to replace this process.
 
+# test123
+
 ## ANSI Colors (FG & BG)
 RED="$(printf '\033[31m')"  GREEN="$(printf '\033[32m')"  ORANGE="$(printf '\033[33m')"  BLUE="$(printf '\033[34m')"
 MAGENTA="$(printf '\033[35m')"  CYAN="$(printf '\033[36m')"  WHITE="$(printf '\033[37m')" BLACK="$(printf '\033[30m')"
