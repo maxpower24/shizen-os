@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Arch Install Script by maxpower24
-# Last updated 22.8.21
+# Last updated xx.xx.xxxx
 
-# This is a custom arch install script so I don't have to manually go through the steps each time.
-# It allows for input so I can adapt to each device but it's written to fit my needs so I don't recommend using it without reading through it first.
+# Custom script to install arch and all required packages and configs.
 # Eventually I might create an archiso with calamares to replace this process.
 
 # test123
@@ -22,8 +21,9 @@ raw_git_url="https://raw.githubusercontent.com/$git_repo/$git_branch"
 install_ssh=false
 reinstall=false
 
+# The meat and potatoes
 main () {
-    banner
+    banner # Calls the banner function below, only displays does nothing else
     var_input
     if [[ $reinstall == false ]]; then
         prep_disks
@@ -41,6 +41,7 @@ main () {
     done
 }
 
+# Displays the banner, nothing else
 banner () {
     clear
     cat <<- _EOF_
@@ -65,7 +66,7 @@ var_input () {
     local line=""
     local disk=""
     local disks=()
-    local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
+    #local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
 
     while $retry; do
         read -p 'Enter username: ' username

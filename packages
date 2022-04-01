@@ -32,6 +32,7 @@ dmenu
 i3-gaps
 picom
 rofi
+polybar
 
 # - Programs -
 
@@ -39,8 +40,8 @@ rofi
 pulseaudio
 
 # Files
-p7zip
-ranger
+#p7zip
+#ranger
 
 # Fonts
 lib32-fontconfig
@@ -48,46 +49,46 @@ ttf-liberation
 wqy-zenhei
 
 # Gaming
-steam
-discord
+#steam
+#discord
 
 # Images
 feh
 
 # Multimedia
-mpd
-mpv
-ncmpcpp
-youtube-dl
+#mpd
+#mpv
+#ncmpcpp
+#youtube-dl
 
 # Network / Internet
 firefox
 networkmanager
-qbittorrent
+#qbittorrent
 ufw
 
 # System
 git
-jre7-openjdk
-go
-python3
-python-pip
+#jre7-openjdk
+#go
+#python3
+#python-pip
 
 # Text Editors
 neovim
-vscode
+#vscode
 
 # Terminal
 kitty
-zsh-completions
+#zsh-completions
 
 # Utilities
-blender
-calcurse
-gimp
-keepassxc
-newsboat
-obs-studio
+#blender
+#calcurse
+#gimp
+#keepassxc
+#newsboat
+#obs-studio
 
 # - Grub -
 grub
