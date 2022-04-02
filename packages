@@ -3,7 +3,7 @@
 # - Base Packages -
 #amd-ucode
 base
-base-devel
+#base-devel
 #dhcpcd
 efibootmgr
 intel-ucode
@@ -30,18 +30,18 @@ lightdm-gtk-greeter
 # - Desktop Environment -
 dmenu
 i3-gaps
-picom
-rofi
-polybar
+#picom
+#rofi
+#polybar
 
 # - Programs -
 
 # Audio
-pulseaudio
+#pulseaudio
 
 # Files
-p7zip
-ranger
+#p7zip
+#ranger
 
 # Fonts
 #lib32-fontconfig
@@ -53,13 +53,13 @@ ranger
 #discord
 
 # Images
-feh
+#feh
 
 # Multimedia
-mpd
-mpv
-ncmpcpp
-youtube-dl
+#mpd
+#mpv
+#ncmpcpp
+#youtube-dl
 
 # Network / Internet
 firefox
@@ -76,7 +76,7 @@ git
 
 # Text Editors
 neovim
-vscode
+#vscode
 
 # Terminal
 kitty
