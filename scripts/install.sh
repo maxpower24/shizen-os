@@ -132,19 +132,19 @@ prep_disks () {
     get_partitions
 
     # Format the partitions
-    mkfs.fat -F 32 $efi_part
+    mkfs.fat -F 32 $boot_part
     mkfs.ext4 $root_part
 
     # Make directories and mount the new partitions on "/"", "/efi" and "/home"
     mount $root_part /mnt
-    mkdir /mnt/efi /mnt/home
-    mount $efi_part /mnt/efi
+    mkdir /mnt/boot /mnt/home
+    mount $boot_part /mnt/boot
 }
 
 wipe_disks () {
     get_partitions
     mount $root_part /mnt
-    mount $efi_part /mnt/efi
+    mount $boot_part /mnt/boot
     cd /mnt && rm -r *
 }
 
@@ -182,7 +182,7 @@ get_partitions () {
     if [[ $root_disk == *nvme* ]]; then
         root_disk=$root_disk'p'
     fi
-    efi_part=$root_disk'1'
+    boot_part=$root_disk'1'
     root_part=$root_disk'2'
 }
 
