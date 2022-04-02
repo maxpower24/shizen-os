@@ -73,6 +73,7 @@ git
 #go
 #python3
 #python-pip
+gnome-keyring
 
 # Text Editors
 neovim
