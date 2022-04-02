@@ -3,7 +3,7 @@
 # - Base Packages -
 #amd-ucode
 base
-#base-devel
+base-devel
 #dhcpcd
 efibootmgr
 intel-ucode

@@ -28,7 +28,7 @@ echo $username' ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
 passwd $username
 
 # Install and configure GRUB boot loader with microcode
-grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Create home folders
@@ -51,7 +51,7 @@ cp -r "$local_repo/wallpapers" $home_dir/pics
 cp -r "$local_repo/dotfiles/." $home_dir
 
 # Enable services
-#systemctl enable lightdm
+systemctl enable lightdm
 systemctl enable NetworkManager
 systemctl enable ufw
 
