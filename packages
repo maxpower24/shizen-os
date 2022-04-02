@@ -1,59 +1,59 @@
 # Package list for use in pacstrap.
 
 # - Base Packages -
-amd-ucode
+#amd-ucode
 base
 base-devel
-dhcpcd
+#dhcpcd
 efibootmgr
 intel-ucode
 linux
 linux-firmware
-ntfs-3g
+#ntfs-3g
 polkit
-zsh
+#zsh
 
 # - Xorg -
-xorg-server
-xorg-xkill
-xorg-xrandr
+#xorg-server
+#xorg-xkill
+#xorg-xrandr
 
 # - Nvidia Drivers -
-nvidia
-nvidia-utils
-lib32-nvidia-utils
+#nvidia
+#nvidia-utils
+#lib32-nvidia-utils
 
 # - LightDM -
-lightdm
-lightdm-gtk-greeter
+#lightdm
+#lightdm-gtk-greeter
 
 # - Desktop Environment -
-dmenu
-i3-gaps
-picom
-rofi
-polybar
+#dmenu
+#i3-gaps
+#picom
+#rofi
+#polybar
 
 # - Programs -
 
 # Audio
-pulseaudio
+#pulseaudio
 
 # Files
 #p7zip
 #ranger
 
 # Fonts
-lib32-fontconfig
-ttf-liberation
-wqy-zenhei
+#lib32-fontconfig
+#ttf-liberation
+#wqy-zenhei
 
 # Gaming
 #steam
 #discord
 
 # Images
-feh
+#feh
 
 # Multimedia
 #mpd
@@ -62,7 +62,7 @@ feh
 #youtube-dl
 
 # Network / Internet
-firefox
+#firefox
 networkmanager
 #qbittorrent
 ufw
@@ -79,7 +79,7 @@ neovim
 #vscode
 
 # Terminal
-kitty
+#kitty
 #zsh-completions
 
 # Utilities

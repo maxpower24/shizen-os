@@ -51,7 +51,7 @@ cp -r "$local_repo/wallpapers" $home_dir/pics
 cp -r "$local_repo/dotfiles/." $home_dir
 
 # Enable services
-systemctl enable lightdm
+#systemctl enable lightdm
 systemctl enable NetworkManager
 systemctl enable ufw
 

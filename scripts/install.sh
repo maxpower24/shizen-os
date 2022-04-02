@@ -66,7 +66,7 @@ var_input () {
     local line=""
     local disk=""
     local disks=()
-    #local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
+    local lines=($(parted -l | grep "Disk /" | sed -e 's/^[^ ]* //' -e 's/ //g'))
 
     while $retry; do
         read -p 'Enter username: ' username
@@ -81,12 +81,6 @@ var_input () {
         select answer in "${disks[@]}"; do
             root_disk=$(echo $answer | cut -d ' ' -f 1 | sed 's/.$//')
             unset 'disks[REPLY-1]'
-            break
-        done
-
-        PS3='Select disk to install home dir on: '
-        select answer in "${disks[@]}"; do
-            home_disk=$(echo $answer | cut -d ' ' -f 1 | sed 's/.$//')
             break
         done
 
@@ -110,7 +104,6 @@ var_input () {
         echo "Username: $username"
         echo "Hostname: $hostname"
         echo "Install root dir on: $root_disk"
-        echo "Install home dir on: $home_disk"
         echo "Reinstall: $reinstall"
         echo "Install OpenSSH: $install_ssh"
         echo
@@ -136,29 +129,22 @@ prep_disks () {
         mkpart "'"'"root partition"'"'" ext4 521MiB 100% \
         set 1 esp on
 
-    parted -s -a optimal $home_disk \
-        mklabel gpt \
-        mkpart "'"'"home partition"'"'" ext4 0% 100%
-
     get_partitions
 
     # Format the partitions
     mkfs.fat -F 32 $efi_part
     mkfs.ext4 $root_part
-    mkfs.ext4 $home_part
 
     # Make directories and mount the new partitions on "/"", "/efi" and "/home"
     mount $root_part /mnt
     mkdir /mnt/efi /mnt/home
     mount $efi_part /mnt/efi
-    mount $home_part /mnt/home
 }
 
 wipe_disks () {
     get_partitions
     mount $root_part /mnt
     mount $efi_part /mnt/efi
-    mount $home_part /mnt/home
     cd /mnt && rm -r *
 }
 
@@ -195,12 +181,9 @@ get_partitions () {
     # Assign partition numbers
     if [[ $root_disk == *nvme* ]]; then
         root_disk=$root_disk'p'
-    elif [[ $home_disk == *nvme* ]]; then
-        home_disk=$home_disk'p'
     fi
     efi_part=$root_disk'1'
     root_part=$root_disk'2'
-    home_part=$home_disk'1'
 }
 
 main
