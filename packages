@@ -41,7 +41,7 @@ i3-gaps
 
 # Files
 #p7zip
-#ranger
+ranger
 
 # Fonts
 #lib32-fontconfig
@@ -76,7 +76,7 @@ git
 
 # Text Editors
 neovim
-#vscode
+vscode
 
 # Terminal
 kitty
@@ -86,7 +86,7 @@ zsh-completions
 #blender
 #calcurse
 #gimp
-#keepassxc
+keepassxc
 #newsboat
 #obs-studio
 
