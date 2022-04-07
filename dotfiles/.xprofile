@@ -4,5 +4,5 @@ xrandr --output eDP-1 --mode 1920x1080 --primary
 #xrandr --output DP-4 --mode 1920x1080 --pos 2560x0 --rate 144 --rotate left
 
 # Set wallpapers
-feh --bg-fill ~/pics/wallpapers/temple.jpeg
+feh --bg-fill ~/pics/wallpapers/mask.png
 #feh --bg-fill ~/pics/wallpapers/temple.jpeg ~/pics/wallpapers/mountains.jpg

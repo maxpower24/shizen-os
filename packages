@@ -17,6 +17,7 @@ zsh
 xorg-server
 xorg-xkill
 xorg-xrandr
+xf86-input-synaptics
 
 # - Nvidia Drivers -
 #nvidia
@@ -30,8 +31,9 @@ lightdm-gtk-greeter
 # - Desktop Environment -
 dmenu
 i3-gaps
+i3status
 #picom
-#rofi
+rofi
 #polybar
 
 # - Programs -
@@ -53,7 +55,7 @@ ranger
 #discord
 
 # Images
-#feh
+feh
 
 # Multimedia
 #mpd
