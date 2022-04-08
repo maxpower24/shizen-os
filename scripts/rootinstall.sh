@@ -28,6 +28,7 @@ echo $username' ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
 passwd $username
 
 # Install and configure GRUB boot loader with microcode
+# copy config file
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 

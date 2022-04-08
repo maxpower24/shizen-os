@@ -125,8 +125,8 @@ prep_disks () {
     # Partition the drives for UEFI on GPT.
     parted -s -a optimal $root_disk \
         mklabel gpt \
-        mkpart "'"'"EFI system partition"'"'" fat32 1MiB 521MiB \
-        mkpart "'"'"root partition"'"'" ext4 521MiB 100% \
+        mkpart "'"'"EFI system partition"'"'" fat32 1MiB 512MiB \
+        mkpart "'"'"root partition"'"'" ext4 512MiB 100% \
         set 1 esp on
 
     get_partitions

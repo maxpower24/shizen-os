@@ -1,6 +1,18 @@
 # shizen-os
 
+## Drive Preperation
+Below are manual steps required to format and cryptographically erase data. Should only need to be done once on a device if I don't remove encryption.
+
+### Format NVME and set sector size to 4 Kib
+nvme format /dev/nvme0 -s 1 -n 1 -l 1
+
+### Secure erase the disk (note - takes a long ass time)
+cryptsetup open --type plain -d /dev/urandom /dev/nvme0n1 to_be_wiped
+dd if=/dev/zero of=/dev/mapper/to_be_wiped status=progress
+cryptsetup close to_be_wiped
+
 ## To Do List
+- Add dm-crypt stuff to install scripts
 - Continue down the arch general recommendations
 - Decide on a theme/background
 - Create a cheatsheet for shortcuts
