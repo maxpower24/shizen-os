@@ -190,7 +190,7 @@ gaps inner 10
 
 smart_borders on
 smart_borders no_gaps
-border_radius 2
+#border_radius 2
 
 # Set colours
 # class                 border  backgr. text    indicator child_border

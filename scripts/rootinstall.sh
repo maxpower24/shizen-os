@@ -12,7 +12,7 @@ fallocate -l 4GB /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
-echo '\n/swapfile none swap defaults 0 0' >> /etc/fstab
+echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
@@ -43,7 +43,7 @@ mkinitcpio -p linux
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 root_uuid=($(blkid | grep $root_part | awk '{print $2}' | sed  's/"//g'))
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=$root_uuid:cryptroot root=/dev/mapper/cryptroot\"" /etc/default/grub
+sed -i "s@GRUB_CMDLINE_LINUX=\"\"@GRUB_CMDLINE_LINUX=\"cryptdevice=$root_uuid:cryptroot root=/dev/mapper/cryptroot\"@g" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Create home folders
