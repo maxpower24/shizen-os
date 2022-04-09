@@ -64,6 +64,7 @@ git clone -b $git_branch https://github.com/$git_repo $local_repo
 # Copy config and other dotfile data
 cp -r "$local_repo/wallpapers" $home_dir/pics
 cp -r "$local_repo/dotfiles/." $home_dir
+cp "$local_repo/etc/X11/xorg.conf.d/70-synaptics.conf" /etc/X11/xorg.conf.d/70-synaptics.conf
 
 # Enable services
 systemctl enable lightdm
