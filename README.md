@@ -11,8 +11,13 @@ cryptsetup open --type plain -d /dev/urandom /dev/nvme0n1 to_be_wiped
 dd if=/dev/zero of=/dev/mapper/to_be_wiped status=progress
 cryptsetup close to_be_wiped
 
+## Installation guide
+1. Connect to internet with iwctl
+2. Download install script with curl
+3. Run install script and follow the prompts
+
 ## To Do List
-- Add dm-crypt stuff to install scripts
+- Swap file and hibernation
 - Continue down the arch general recommendations
 - Decide on a theme/background
 - Create a cheatsheet for shortcuts
@@ -27,8 +32,7 @@ cryptsetup close to_be_wiped
 ## Done
 - ~~Basic desktop environment install script~~
 - ~~Touchpad drivers~~
-
-
+- ~~Add dm-crypt stuff to install scripts~~
 
 ## OLD Issues / Bugs / Todo
 - image previews in kitty

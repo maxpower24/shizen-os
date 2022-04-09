@@ -36,6 +36,7 @@ main () {
     while [[ $REPLY != [YyNn]* ]]; do
         read -p "Installation complete, reboot now (y/n)?"
         if [[ $REPLY == [Yy]* ]]; then
+            umount -a
             reboot
         fi
     done
@@ -131,19 +132,22 @@ prep_disks () {
 
     get_partitions
 
-    # Format the partitions
+    # Format and encrypt partitions
+    cryptsetup -y -v luksFormat $root_part
+    cryptsetup open $root_part cryptroot
+    mkfs.ext4 /dev/mapper/cryptroot
     mkfs.fat -F 32 $boot_part
-    mkfs.ext4 $root_part
 
     # Make directories and mount the new partitions on "/"", "/efi" and "/home"
-    mount $root_part /mnt
+    mount /dev/mapper/cryptroot /mnt
     mkdir /mnt/boot /mnt/home
     mount $boot_part /mnt/boot
 }
 
 wipe_disks () {
     get_partitions
-    mount $root_part /mnt
+    cryptsetup open $root_part cryptroot
+    mount /dev/mapper/cryptroot /mnt
     mount $boot_part /mnt/boot
     cd /mnt && rm -r *
 }
@@ -173,7 +177,7 @@ installer () {
     # Change root and run setup script
     curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
     chmod +x /mnt/rootinstall.sh
-    arch-chroot /mnt ./rootinstall.sh $username $hostname $git_repo $git_branch $install_ssh
+    arch-chroot /mnt ./rootinstall.sh $username $hostname $git_repo $git_branch $install_ssh $root_part
     rm /mnt/rootinstall.sh
 }
 

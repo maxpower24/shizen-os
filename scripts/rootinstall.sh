@@ -4,7 +4,15 @@ hostname=$2
 git_repo=$3
 git_branch=$4
 install_ssh=$5
+root_part=$6
 home_dir="/home/$username"
+
+# Set Swap File
+fallocate -l 4GB /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '\n/swapfile none swap defaults 0 0' >> /etc/fstab
 
 # Set the time zone
 ln -sf /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
@@ -27,9 +35,15 @@ useradd -m -G adm -s /usr/bin/zsh $username
 echo $username' ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
 passwd $username
 
+# Edit mkinitcpio hooks
+sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems keyboard fsck)/g" /etc/mkinitcpio.conf
+mkinitcpio -p linux
+
 # Install and configure GRUB boot loader with microcode
-# copy config file
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+root_uuid=($(blkid | grep $root_part | awk '{print $2}' | sed  's/"//g'))
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=$root_uuid:cryptroot root=/dev/mapper/cryptroot\"" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Create home folders
