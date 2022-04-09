@@ -44,6 +44,10 @@ pulseaudio-alsa
 pulseaudio-bluetooth
 pavucontrol
 
+# Bluetooth
+bluez
+bluez-utils
+
 # Files
 #p7zip
 ranger
@@ -100,7 +104,12 @@ arch-wiki-docs
 dialog
 man-db
 man-pages
-go
+
 
 # - Grub -
 grub
+
+
+
+# Dependencies
+go

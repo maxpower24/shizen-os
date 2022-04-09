@@ -4,8 +4,7 @@ git clone https://aur.archlinux.org/yay.git ~/temp/yay
 ( cd ~/temp/yay && makepkg -i )
 
 # Install yay packages
-yay -S spotify
-#protonvpn unityhub code-marketplace polybar
+yay -S spotify protonvpn unityhub code-marketplace polybar
 
 # Firewall config
 sudo ufw default deny incoming

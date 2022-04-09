@@ -28,13 +28,13 @@ cryptsetup close to_be_wiped
 - Figure out what can be themed and how
 - Secure Boot
 - Filesystem encryption for cloud sync
-- Keyboard function keys
 
 ## Done
 - ~~Basic desktop environment install script~~
 - ~~Touchpad drivers~~
 - ~~Add dm-crypt stuff to install scripts~~
 - ~~Swap file~~
+- ~~Audio & Bluetooth~~
 
 ## Cheat Sheets
 https://i3wm.org/docs/refcard.html
