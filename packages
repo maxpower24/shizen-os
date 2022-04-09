@@ -39,7 +39,10 @@ rofi
 # - Programs -
 
 # Audio
-#pulseaudio
+pulseaudio
+pulseaudio-alsa
+pulseaudio-bluetooth
+pavucontrol
 
 # Files
 #p7zip
@@ -92,6 +95,12 @@ zsh-completions
 keepassxc
 #newsboat
 #obs-studio
+arch-wiki-lite
+arch-wiki-docs
+dialog
+man-db
+man-pages
+go
 
 # - Grub -
 grub

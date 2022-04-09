@@ -15,9 +15,10 @@ cryptsetup close to_be_wiped
 1. Connect to internet with iwctl
 2. Download install script with curl
 3. Run install script and follow the prompts
+4. Run umount -a and reboot after exiting arch-chroot
 
 ## To Do List
-- Swap file and hibernation
+- Hibernation
 - Continue down the arch general recommendations
 - Decide on a theme/background
 - Create a cheatsheet for shortcuts
@@ -25,14 +26,18 @@ cryptsetup close to_be_wiped
 - Rofi config
 - Install apps
 - Figure out what can be themed and how
-- Block Device Encryption
 - Secure Boot
 - Filesystem encryption for cloud sync
+- Keyboard function keys
 
 ## Done
 - ~~Basic desktop environment install script~~
 - ~~Touchpad drivers~~
 - ~~Add dm-crypt stuff to install scripts~~
+- ~~Swap file~~
+
+## Cheat Sheets
+https://i3wm.org/docs/refcard.html
 
 ## OLD Issues / Bugs / Todo
 - image previews in kitty
