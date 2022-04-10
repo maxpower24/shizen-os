@@ -39,6 +39,18 @@ cryptsetup close to_be_wiped
 ## Cheat Sheets
 https://i3wm.org/docs/refcard.html
 
+## Design Ideas
+Polybar 
+- Left: clock, media controls
+- Centre: Page indicators
+- Right: Sound, Brightness, Ram, SSD, CPU, Wifi, BT, Battery, Power
+
+Rofi
+- Bring up on left side?
+- Add icons and limit apps
+
+Colour scheme based on background.
+
 ## OLD Issues / Bugs / Todo
 - image previews in kitty
 - opne text files in nvim from ranger
