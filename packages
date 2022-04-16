@@ -24,6 +24,10 @@ xf86-input-synaptics
 #nvidia-utils
 #lib32-nvidia-utils
 
+#Intel Drivers
+mesa
+lib32-mesa
+
 # - LightDM -
 lightdm
 lightdm-gtk-greeter
@@ -32,7 +36,9 @@ lightdm-gtk-greeter
 dmenu
 i3-gaps
 i3status
-#picom
+i3lock
+xss-lock
+picom
 rofi
 #polybar
 
@@ -49,39 +55,39 @@ bluez
 bluez-utils
 
 # Files
-#p7zip
+p7zip
 ranger
 
 # Fonts
-#lib32-fontconfig
-#ttf-liberation
-#wqy-zenhei
+lib32-fontconfig
+ttf-liberation
+wqy-zenhei
 
 # Gaming
-#steam
-#discord
+steam
+discord
 
 # Images
 feh
 w3m
 
 # Multimedia
-#mpd
-#mpv
-#ncmpcpp
-#youtube-dl
+mpd
+mpv
+ncmpcpp
+youtube-dl
 
 # Network / Internet
 firefox
 networkmanager
-#qbittorrent
+qbittorrent
 ufw
 
 # System
 git
-#jre7-openjdk
-#go
-#python3
+jre-openjdk
+go
+python3
 #python-pip
 gnome-keyring
 
@@ -94,11 +100,11 @@ kitty
 zsh-completions
 
 # Utilities
-#blender
-#calcurse
-#gimp
+blender
+calcurse
+gimp
 keepassxc
-#newsboat
+newsboat
 #obs-studio
 arch-wiki-lite
 arch-wiki-docs

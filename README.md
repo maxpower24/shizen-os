@@ -18,7 +18,6 @@ cryptsetup close to_be_wiped
 4. Run umount -a and reboot after exiting arch-chroot
 
 ## To Do List
-- Hibernation
 - Continue down the arch general recommendations
 - Decide on a theme/background
 - Create a cheatsheet for shortcuts
@@ -35,13 +34,16 @@ cryptsetup close to_be_wiped
 - ~~Add dm-crypt stuff to install scripts~~
 - ~~Swap file~~
 - ~~Audio & Bluetooth~~
+- ~~Hibernation~~
+- ~~Decrease swappiness~~
+- ~~Login on resume from sleep~~
 
 ## Cheat Sheets
 https://i3wm.org/docs/refcard.html
 
 ## Design Ideas
 Polybar 
-- Left: clock, media controls
+- Left: clock, media controls, global menu (?)
 - Centre: Page indicators
 - Right: Sound, Brightness, Ram, SSD, CPU, Wifi, BT, Battery, Power
 
@@ -49,7 +51,7 @@ Rofi
 - Bring up on left side?
 - Add icons and limit apps
 
-Colour scheme based on background.
+Colour scheme - start with making everything gruvbox
 
 ## OLD Issues / Bugs / Todo
 - image previews in kitty

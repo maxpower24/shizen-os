@@ -8,7 +8,7 @@ root_part=$6
 home_dir="/home/$username"
 
 # Set Swap File
-fallocate -l 4GB /swapfile
+fallocate -l 16GB /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
@@ -36,14 +36,16 @@ echo $username' ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
 passwd $username
 
 # Edit mkinitcpio hooks
-sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems keyboard fsck)/g" /etc/mkinitcpio.conf
+sed -i "s/HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems resume keyboard fsck)/g" /etc/mkinitcpio.conf
 mkinitcpio -p linux
 
 # Install and configure GRUB boot loader with microcode
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 root_uuid=($(blkid | grep $root_part | awk '{print $2}' | sed  's/"//g'))
-sed -i "s@GRUB_CMDLINE_LINUX=\"\"@GRUB_CMDLINE_LINUX=\"cryptdevice=$root_uuid:cryptroot root=/dev/mapper/cryptroot\"@g" /etc/default/grub
+swap_uuid=($(findmnt -no UUID -T /swapfile))
+swap_off=($(filefrag -v /swapfile | awk '$1=="0:" {print substr($4, 1, length($4)-2)}'))
+sed -i "s@GRUB_CMDLINE_LINUX=\"\"@GRUB_CMDLINE_LINUX=\"cryptdevice=$root_uuid:cryptroot root=/dev/mapper/cryptroot resume=UUID=$swap_uuid resume_offset=$swap_off\"@g" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Create home folders
@@ -64,7 +66,7 @@ git clone -b $git_branch https://github.com/$git_repo $local_repo
 # Copy config and other dotfile data
 cp -r "$local_repo/wallpapers" $home_dir/pics
 cp -r "$local_repo/dotfiles/." $home_dir
-cp "$local_repo/etc/X11/xorg.conf.d/70-synaptics.conf" /etc/X11/xorg.conf.d/70-synaptics.conf
+cp -r "$local_repo/etc/." /etc
 
 # Enable services
 systemctl enable lightdm
