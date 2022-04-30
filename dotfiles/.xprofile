@@ -6,3 +6,5 @@ xrandr --output eDP-1 --mode 1920x1080 --primary
 # Set wallpapers
 feh --bg-fill ~/pics/wallpapers/mask.png
 #feh --bg-fill ~/pics/wallpapers/temple.jpeg ~/pics/wallpapers/mountains.jpg
+
+export EDITOR=/usr/bin/nvim
