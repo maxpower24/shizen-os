@@ -6,41 +6,34 @@
 # Custom script to install arch and all required packages and configs.
 # Eventually I might create an archiso with calamares to replace this process.
 
-## ANSI Colors (FG & BG)
-RED="$(printf '\033[31m')"  GREEN="$(printf '\033[32m')"  ORANGE="$(printf '\033[33m')"  BLUE="$(printf '\033[34m')"
-MAGENTA="$(printf '\033[35m')"  CYAN="$(printf '\033[36m')"  WHITE="$(printf '\033[37m')" BLACK="$(printf '\033[30m')"
-REDBG="$(printf '\033[41m')"  GREENBG="$(printf '\033[42m')"  ORANGEBG="$(printf '\033[43m')"  BLUEBG="$(printf '\033[44m')"
-MAGENTABG="$(printf '\033[45m')"  CYANBG="$(printf '\033[46m')"  WHITEBG="$(printf '\033[47m')" BLACKBG="$(printf '\033[40m')"
+# CONVENTIONS TO REMEMBER
+# use local variables within functions
+# naming - run_function, my_variable, MY_CONSTANT
+# set statements and constants -> functions -> main function
 
-# Set global variables
-git_repo="maxpower24/shizen-os"
-git_branch="vb_update"
-raw_git_url="https://raw.githubusercontent.com/$git_repo/$git_branch"
-install_ssh=false
-reinstall=false
+# Set ANSI Colors (FG & BG)
+readonly BLACK="$(printf '\033[30m')"
+readonly RED="$(printf '\033[31m')"
+readonly GREEN="$(printf '\033[32m')"
+readonly ORANGE="$(printf '\033[33m')"
+readonly BLUE="$(printf '\033[34m')"
+readonly MAGENTA="$(printf '\033[35m')"
+readonly CYAN="$(printf '\033[36m')"
+readonly WHITE="$(printf '\033[37m')"
+readonly BLACKBG="$(printf '\033[40m')"
+readonly REDBG="$(printf '\033[41m')"
+readonly GREENBG="$(printf '\033[42m')"
+readonly ORANGEBG="$(printf '\033[43m')"
+readonly BLUEBG="$(printf '\033[44m')"
+readonly MAGENTABG="$(printf '\033[45m')"
+readonly CYANBG="$(printf '\033[46m')"
+readonly WHITEBG="$(printf '\033[47m')"
 
-# The meat and potatoes
-main () {
-    banner # Calls the banner function below, only displays does nothing else
-    var_input
-    if [[ $reinstall == false ]]; then
-        prep_disks
-    elif [[ $reinstall == true ]]; then
-        wipe_disks
-    fi
-    installer
+# Set other constants
+readonly GIT_REPO="maxpower24/shizen-os"
+readonly GIT_BRANCH="vb_update"
 
-    # Print errors and check for reboot
-    while [[ $REPLY != [YyNn]* ]]; do
-        read -p "Installation complete, reboot now (y/n)?"
-        if [[ $REPLY == [Yy]* ]]; then
-            umount -a
-            reboot
-        fi
-    done
-}
-
-# Displays the banner, nothing else
+# Displays the banner
 banner () {
     clear
     cat <<- _EOF_
@@ -51,8 +44,8 @@ banner () {
 		└─────────────────────────────────────┘
 		${ORANGE}[*] ${CYAN}By: Max Power
 		${ORANGE}[*] ${CYAN}Github: @maxpower24
-		${ORANGE}[*] ${CYAN}Repo: ${git_repo}
-		${ORANGE}[*] ${CYAN}Branch: ${git_branch}
+		${ORANGE}[*] ${CYAN}Repo: ${GIT_REPO}
+		${ORANGE}[*] ${CYAN}Branch: ${GIT_BRANCH}
 
 		Welcome...
 
@@ -152,6 +145,8 @@ wipe_disks () {
 }
 
 installer () {
+    local raw_git_url="https://raw.githubusercontent.com/$GIT_REPO/$GIT_BRANCH"
+
     # Update the system clock
     timedatectl set-ntp true
 
@@ -176,7 +171,7 @@ installer () {
     # Change root and run setup script
     curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
     chmod +x /mnt/rootinstall.sh
-    arch-chroot /mnt ./rootinstall.sh $username $hostname $git_repo $git_branch $install_ssh $root_part
+    arch-chroot /mnt ./rootinstall.sh $username $hostname $GIT_REPO $GIT_BRANCH $install_ssh $root_part
     rm /mnt/rootinstall.sh
 }
 
@@ -187,6 +182,30 @@ get_partitions () {
     fi
     boot_part=$root_disk'1'
     root_part=$root_disk'2'
+}
+
+# The meat and potatoes
+main () {
+    local install_ssh
+    local reinstall
+    
+    banner
+    var_input
+    #if $reinstall; then
+    #    wipe_disks
+    #else
+    #    prep_disks
+    #fi
+    #installer
+#
+    ## Print errors and check for reboot
+    #while [[ $REPLY != [YyNn]* ]]; do
+    #    read -p "Installation complete, reboot now (y/n)?"
+    #    if [[ $REPLY == [Yy]* ]]; then
+    #        umount -a
+    #        reboot
+    #    fi
+    #done
 }
 
 main

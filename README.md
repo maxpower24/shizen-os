@@ -15,6 +15,8 @@ cryptsetup close to_be_wiped
 ## Installation guide
 1. Connect to internet with iwctl
 2. Download install script with curl
+    a. curl -L https://raw.githubusercontent.com/maxpower24/shizen-os/vb_update/scripts/install.sh -o ./install.sh
+    b. chmod +x ./install.sh
 3. Run install script and follow the prompts
 4. Run umount -a and reboot after exiting arch-chroot
 
