@@ -1,12 +1,10 @@
 #!/bin/bash
 
 # Arch Install Script by maxpower24
-# Last updated xx.xx.xxxx
+# Last updated 11.05.2022
 
 # Custom script to install arch and all required packages and configs.
 # Eventually I might create an archiso with calamares to replace this process.
-
-# test123
 
 ## ANSI Colors (FG & BG)
 RED="$(printf '\033[31m')"  GREEN="$(printf '\033[32m')"  ORANGE="$(printf '\033[33m')"  BLUE="$(printf '\033[34m')"

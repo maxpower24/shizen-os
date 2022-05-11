@@ -1,4 +1,5 @@
 # shizen-os
+If you're not me you can stop reading through my crappy little arch project. This is only public so I can access the files easily during install.
 
 ## Drive Preperation
 Below are manual steps required to format and cryptographically erase data. Should only need to be done once on a device if I don't remove encryption.
@@ -51,7 +52,7 @@ Rofi
 - Bring up on left side?
 - Add icons and limit apps
 
-Colour scheme - start with making everything gruvbox
+Colour scheme - start with making everything gruvbox or everforest?
 
 ## OLD Issues / Bugs / Todo
 - image previews in kitty
