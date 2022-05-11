@@ -90,6 +90,7 @@ go
 python3
 #python-pip
 gnome-keyring
+xdg-user-dirs
 
 # Text Editors
 neovim
@@ -120,3 +121,4 @@ grub
 
 # Dependencies
 go
+network-manger-applet
