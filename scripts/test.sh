@@ -1,16 +1,3 @@
-#!/bin/bash
-
-# Arch Install Script by maxpower24
-# Last updated 11.05.2022
-
-# Custom script to install arch and all required packages and configs.
-# Eventually I might create an archiso with calamares to replace this process.
-
-# CONVENTIONS TO REMEMBER
-# use local variables within functions
-# naming - run_function, my_variable, MY_CONSTANT
-# set statements and constants -> functions -> main function
-
 # Set ANSI Colors (FG & BG)
 readonly BLACK="$(printf '\033[30m')"
 readonly RED="$(printf '\033[31m')"
@@ -54,26 +41,20 @@ banner () {
 
 var_input () {
     local retry
-    local line
-    local lines
     local disk
     local disks
-    local answer
-    
-    lines=($(fdisk -l | grep "Disk /" | awk '{print $2}' | sed 's/:$//'))
+    local root_disk
+    local home_disk
 
     while $retry; do
         read -p 'Enter username: ' username
         read -p 'Enter hostname: ' hostname
 
-        for line in ${lines[@]}; do
-            disk=$(echo $line | sed 's/:/: /g')
-            disks+=("$disk")
-        done
+        disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
 
         PS3='Select disk to install root dir on: '
-        select answer in "${disks[@]}"; do
-            root_disk=$(echo $answer | cut -d ' ' -f 1 | sed 's/.$//')
+        select disk in "${disks[@]}"; do
+            root_disk=$(echo $disk | cut -d '(' -f 1)
             unset 'disks[REPLY-1]'
             break
         done
@@ -115,83 +96,21 @@ var_input () {
     echo
 }
 
-prep_disks () {
-    # Partition the drives for UEFI on GPT.
-    parted -s -a optimal $root_disk \
-        mklabel gpt \
-        mkpart "'"'"EFI system partition"'"'" fat32 1MiB 512MiB \
-        mkpart "'"'"root partition"'"'" ext4 512MiB 100% \
-        set 1 esp on
-
-    get_partitions
-
-    # Format and encrypt partitions
-    cryptsetup -y -v luksFormat $root_part
-    cryptsetup open $root_part cryptroot
-    mkfs.ext4 /dev/mapper/cryptroot
-    mkfs.fat -F 32 $boot_part
-
-    # Make directories and mount the new partitions on "/"", "/efi" and "/home"
-    mount /dev/mapper/cryptroot /mnt
-    mkdir /mnt/boot /mnt/home
-    mount $boot_part /mnt/boot
-}
-
-wipe_disks () {
-    get_partitions
-    cryptsetup open $root_part cryptroot
-    mount /dev/mapper/cryptroot /mnt
-    mount $boot_part /mnt/boot
-    cd /mnt && rm -r *
-}
-
-installer () {
-    local raw_git_url="https://raw.githubusercontent.com/$GIT_REPO/$GIT_BRANCH"
-
-    # Update the system clock
-    timedatectl set-ntp true
-
-    # Copy the mirror list
-    curl -L $raw_git_url/etc/pacman.d/mirrorlist -o /etc/pacman.d/mirrorlist
-
-    # Enable multilib repo in live environment for 32-bit packages
-    curl -L $raw_git_url/etc/pacman.conf -o /etc/pacman.conf
-
-    # Install pacstrap packages
-    curl -L $raw_git_url/packages -o packages
-    if $install_ssh; then
-        echo -e "\nopenssh" >> packages
-    fi
-    sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
-    sleep 2
-    pacstrap /mnt - < packages
-
-    # Generate the fstab file to save mounted drives
-    genfstab -U /mnt > /mnt/etc/fstab
-
-    # Change root and run setup script
-    curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
-    chmod +x /mnt/rootinstall.sh
-    arch-chroot /mnt ./rootinstall.sh $username $hostname $GIT_REPO $GIT_BRANCH $install_ssh $root_part
-    rm /mnt/rootinstall.sh
-}
-
-get_partitions () {
-    # Assign partition numbers
-    if [[ $root_disk == *nvme* ]]; then
-        root_disk=$root_disk'p'
-    fi
-    boot_part=$root_disk'1'
-    root_part=$root_disk'2'
-}
-
 # The meat and potatoes
 main () {
-    local install_ssh
+    local username
+    local hostname
+    local optional_packages
     local reinstall
     
-    banner
-    var_input
+    echo -n "Enter username: "
+    read username
+
+    read -p "Enter username: "
+
+    #banner
+    #var_test
+    #var_input
     #if $reinstall; then
     #    wipe_disks
     #else
@@ -210,3 +129,4 @@ main () {
 }
 
 main
+echo $disk
