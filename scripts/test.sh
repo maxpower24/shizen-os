@@ -47,8 +47,8 @@ var_input () {
     local home_disk
 
     while $retry; do
-        read -p 'Enter username: ' username
-        read -p 'Enter hostname: ' hostname
+        read -r -p 'Enter username: ' username
+        read -r -p 'Enter hostname: ' hostname
 
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
 
@@ -96,18 +96,36 @@ var_input () {
     echo
 }
 
+user_query () {
+    local response
+    read -r -p "${1:-Are you sure? [y/N]: }" response
+    response=${response,,} # to lowercase
+    if [[ $response =~ ^(yes|y)$ ]]; then
+        echo true
+    else
+        echo false
+    fi    
+}
+
 # The meat and potatoes
 main () {
     local username
     local hostname
     local optional_packages
     local reinstall
+    local testvar
+
+    testvar=$(user_query "test123")
+    echo $testvar
+
+    #testvar=$(user_query)
+    if [[ $testvar == true ]]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+
     
-    echo -n "Enter username: "
-    read username
-
-    read -p "Enter username: "
-
     #banner
     #var_test
     #var_input
@@ -129,4 +147,3 @@ main () {
 }
 
 main
-echo $disk
