@@ -44,6 +44,7 @@ define_settings () {
     local save_settings
     local seperate_home
     local disks
+    local index
 
     save_settings=false
 
@@ -58,29 +59,15 @@ define_settings () {
         seperate_home=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
 
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
-        root_disk=$(define_disks "/root")
+        root_disk=$(define_disks "/root" "${disks[@]}" | tr -d '\n')
         if [[ $seperate_home == true ]]; then
-            home_disk=$(define_disks "/home")
+            for index in "${!disks[@]}"; do
+                if [[ "${disks[$index]}" == *"${root_disk}"* ]]; then
+                    unset 'disks[index]'
+                fi
+            done
+            home_disk=$(define_disks "/home" "${disks[@]}" | tr -d '\n')
         fi
-
-        echo $root_disk
-        echo $root_disk
-        #echo
-        #PS3='Select disk to install /root on: ' # Could put this block in it's own function since it's repeated, but how could I unset?
-        #select disk in "${disks[@]}"; do
-        #    root_disk=$(echo $disk | cut -d '(' -f 1)
-        #    unset 'disks[REPLY-1]'
-        #    break
-        #done
-        #if [[ $seperate_home == true ]]; then
-        #    echo
-        #    PS3='Select disk to install /home on: '
-        #    select disk in "${disks[@]}"; do
-        #        home_disk=$(echo $disk | cut -d '(' -f 1)
-        #        unset 'disks[REPLY-1]'
-        #        break
-        #    done
-        #fi
 
         echo
         echo "Username: $username"
@@ -102,6 +89,7 @@ define_settings () {
 }
 
 # Function for getting user input with true or false output. If a question is input as a parameter it will use that, otherwise default one is defined
+# If the user enters an invalid entry it defines as false and asks again, but then all answers are added to the variable. FIX THIS
 ask_user () {
     # Define local variables used by this and downstream functions
     local response
@@ -120,13 +108,16 @@ ask_user () {
 # Function to assign disks to a variable. Dependant on the local disks variable defined in define_settings() as I'm unsure how to tackle the 'unset' part yet
 define_disks () {
     # Define local variables used by this and downstream functions
+    local dir
+    local disks
     local disk
 
-    echo
-    PS3="Select disk to install $1 on: "
+    dir=$1
+    shift
+    disks=($@)
+    PS3="Select disk to install $dir on: "
     select disk in "${disks[@]}"; do
         echo $disk | cut -d '(' -f 1
-        unset 'disks[REPLY-1]'
         break
     done
 }
