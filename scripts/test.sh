@@ -120,7 +120,7 @@ define_disks () {
     local disk
 
     echo
-    PS3="Select disk to install ${$1} on: "
+    PS3="Select disk to install $1 on: "
     select disk in "${disks[@]}"; do
         echo $disk | cut -d '(' -f 1
         unset 'disks[REPLY-1]'
