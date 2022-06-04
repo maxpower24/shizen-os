@@ -95,7 +95,7 @@ var_input () {
 user_query () {
     # Function for getting user input with true or false output.
     local response
-    while [[ $REPLY != [YyNn]* ]]; do
+    while [[ $response != [yn]* ]]; do
         read -r -p "${1:-Are you sure? [y/N]: }" response
         response=${response,,} # to lowercase
         if [[ $response =~ ^(yes|y)$ ]]; then
@@ -104,7 +104,6 @@ user_query () {
             echo false
         fi
     done
-    unset REPLY  
 }
 
 # The meat and potatoes
