@@ -116,7 +116,7 @@ main () {
     local testvar
 
     testvar=$(user_query "test123")
-    echo $testvar
+    #echo $testvar
 
     #testvar=$(user_query)
     if [[ $testvar == true ]]; then
