@@ -59,9 +59,12 @@ define_settings () {
 
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
         root_disk=$(define_disks "/root")
-        if [[ seperate_home == true ]]; then
+        if [[ $seperate_home == true ]]; then
             home_disk=$(define_disks "/home")
         fi
+
+        echo $root_disk
+        echo $root_disk
         #echo
         #PS3='Select disk to install /root on: ' # Could put this block in it's own function since it's repeated, but how could I unset?
         #select disk in "${disks[@]}"; do
