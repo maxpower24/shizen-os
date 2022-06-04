@@ -1,4 +1,4 @@
-# pull test
+# pull test1234
 # Set ANSI Colors (FG & BG)
 readonly BLACK="$(printf '\033[30m')"
 readonly RED="$(printf '\033[31m')"
