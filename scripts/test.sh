@@ -79,7 +79,7 @@ var_input () {
         echo "Install optional packages: $optional_packages"
         echo "Reinstall: $reinstall"
         echo "Install /root on: $root_disk"
-        if [[ $seperate_home ==true ]]; do
+        if [[ $seperate_home == true ]]; do
             echo "Install /home on: $home_disk"
         done
         echo
