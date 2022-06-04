@@ -54,21 +54,22 @@ define_settings () {
         read -r -p 'Enter username: ' username
         read -r -p 'Enter hostname: ' hostname
 
+        # Use ask_user function to define variables with true/false.
         optional_packages=$(ask_user "Install optional packages? [y/N]: ")
         reinstall=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
         seperate_home=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
 
+        # Get list of disks and pass on to function to define root disk. If user wants a seperate home disk, unset the root disk and pass remaining ones on to the function to define.
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
-        root_disk=$(define_disks "/root" "${disks[@]}" | tr -d '\n')
+        root_disk=$(define_disk "/root" "${disks[@]}" | tr -d '\n')
         if [[ $seperate_home == true ]]; then
             for index in "${!disks[@]}"; do
                 if [[ "${disks[$index]}" == *"${root_disk}"* ]]; then
                     unset 'disks[index]'
                 fi
             done
-            home_disk=$(define_disks "/home" "${disks[@]}" | tr -d '\n')
+            home_disk=$(define_disk "/home" "${disks[@]}" | tr -d '\n')
         fi
-        echo $disks
 
         echo
         echo "Username: $username"
@@ -98,27 +99,30 @@ ask_user () {
     while [[ $response != [yn]* ]]; do
         read -r -p "${1:-Are you sure? [y/N]: }" response
         response=${response,,} # to lowercase
-        if [[ $response =~ ^(yes|y)$ ]]; then
-            echo true
-        else
-            echo false
-        fi
     done
+    if [[ $response =~ ^(yes|y)$ ]]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
-# Function to assign disks to a variable. Dependant on the local disks variable defined in define_settings() as I'm unsure how to tackle the 'unset' part yet
-define_disks () {
+# Function to assign disks to a variable.
+define_disk () {
     # Define local variables used by this and downstream functions
     local dir
-    local disks
+    local disk_arr
     local disk
 
+    # Define the directory from first parameter, shift all params to the left and all remaining are part of the disk array
     dir=$1
     shift
-    disks=($@)
+    disk_arr=($@)
+
+    # Select disk from given array
     echo
     PS3="Select disk to install $dir on: "
-    select disk in "${disks[@]}"; do
+    select disk in "${disk_arr[@]}"; do
         echo $disk | cut -d '(' -f 1
         break
     done
