@@ -21,7 +21,7 @@ readonly GIT_REPO="maxpower24/shizen-os"
 readonly GIT_BRANCH="main"
 
 # Displays the banner
-banner () {
+display_banner () {
     clear
     cat <<- _EOF_
 		${GREEN}┌─────────────────────────────────────┐
@@ -38,12 +38,12 @@ banner () {
 	_EOF_
 }
 
-var_input () {
-    # Set local variables used by this and downstream functions
+# Function to define settings used by the installation via user input
+define_settings () {
+    # Declare local variables used by this and downstream functions
     local save_settings
     local seperate_home
     local disks
-    local disk
 
     save_settings=false
 
@@ -53,27 +53,31 @@ var_input () {
         read -r -p 'Enter username: ' username
         read -r -p 'Enter hostname: ' hostname
 
-        optional_packages=$(user_query "Install optional packages? [y/N]: ")
-        reinstall=$(user_query "Reinstall from existing encrypted Arch installation? [y/N]: ")
-        seperate_home=$(user_query "Install /home on a seperate disk to /root? [y/N]: ")
+        optional_packages=$(ask_user "Install optional packages? [y/N]: ")
+        reinstall=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
+        seperate_home=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
 
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
-        echo
-        PS3='Select disk to install /root on: ' # Could put this block in it's own function since it's repeated, but how could I unset?
-        select disk in "${disks[@]}"; do
-            root_disk=$(echo $disk | cut -d '(' -f 1)
-            unset 'disks[REPLY-1]'
-            break
-        done
-        if [[ $seperate_home == true ]]; then
-            echo
-            PS3='Select disk to install /home on: '
-            select disk in "${disks[@]}"; do
-                home_disk=$(echo $disk | cut -d '(' -f 1)
-                unset 'disks[REPLY-1]'
-                break
-            done
+        root_disk=$(define_disks "/root")
+        if [[ seperate_home == true ]]; then
+            home_disk=$(define_disks "/home")
         fi
+        #echo
+        #PS3='Select disk to install /root on: ' # Could put this block in it's own function since it's repeated, but how could I unset?
+        #select disk in "${disks[@]}"; do
+        #    root_disk=$(echo $disk | cut -d '(' -f 1)
+        #    unset 'disks[REPLY-1]'
+        #    break
+        #done
+        #if [[ $seperate_home == true ]]; then
+        #    echo
+        #    PS3='Select disk to install /home on: '
+        #    select disk in "${disks[@]}"; do
+        #        home_disk=$(echo $disk | cut -d '(' -f 1)
+        #        unset 'disks[REPLY-1]'
+        #        break
+        #    done
+        #fi
 
         echo
         echo "Username: $username"
@@ -86,7 +90,7 @@ var_input () {
         fi
         echo
 
-        save_settings=$(user_query "Are these settings correct? [y/N]: ")
+        save_settings=$(ask_user "Are these settings correct? [y/N]: ")
     done
 
     echo
@@ -94,9 +98,11 @@ var_input () {
     echo
 }
 
-user_query () {
-    # Function for getting user input with true or false output.
+# Function for getting user input with true or false output. If a question is input as a parameter it will use that, otherwise default one is defined
+ask_user () {
+    # Define local variables used by this and downstream functions
     local response
+
     while [[ $response != [yn]* ]]; do
         read -r -p "${1:-Are you sure? [y/N]: }" response
         response=${response,,} # to lowercase
@@ -108,9 +114,23 @@ user_query () {
     done
 }
 
+# Function to assign disks to a variable. Dependant on the local disks variable defined in define_settings() as I'm unsure how to tackle the 'unset' part yet
+define_disks () {
+    # Define local variables used by this and downstream functions
+    local disk
+
+    echo
+    PS3="Select disk to install ${$1} on: "
+    select disk in "${disks[@]}"; do
+        echo $disk | cut -d '(' -f 1
+        unset 'disks[REPLY-1]'
+        break
+    done
+}
+
 # The meat and potatoes
 main () {
-    # Set local variables used by this and downstream functions
+    # Declare local variables used by this and downstream functions
     local username
     local hostname
     local optional_packages
@@ -118,8 +138,8 @@ main () {
     local root_disk
     local home_disk
 
-    banner
-    var_input
+    display_banner
+    define_settings
     #if $reinstall; then
     #    wipe_disks
     #else
