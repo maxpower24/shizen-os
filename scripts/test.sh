@@ -35,7 +35,6 @@ banner () {
 		${ORANGE}[*] ${CYAN}Branch: ${GIT_BRANCH}
 
 		Welcome...
-
 	_EOF_
 }
 
@@ -50,6 +49,7 @@ var_input () {
 
     # Get user input for variables such as username, hostname, disks, etc... Will loop unless settings are confirmed by user.
     while [[ $save_settings != true ]]; do
+        echo
         read -r -p 'Enter username: ' username
         read -r -p 'Enter hostname: ' hostname
 
