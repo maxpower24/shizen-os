@@ -1,4 +1,3 @@
-# pull test1234
 # Set ANSI Colors (FG & BG)
 readonly BLACK="$(printf '\033[30m')"
 readonly RED="$(printf '\033[31m')"
@@ -121,9 +120,9 @@ main () {
 
     #testvar=$(user_query)
     if [[ $testvar == true ]]; then
-        echo "true"
+        echo "true1"
     else
-        echo "false"
+        echo "false1"
     fi
 
     
