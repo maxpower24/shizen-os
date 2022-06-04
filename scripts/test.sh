@@ -68,6 +68,7 @@ define_settings () {
             done
             home_disk=$(define_disks "/home" "${disks[@]}" | tr -d '\n')
         fi
+        echo $disks
 
         echo
         echo "Username: $username"
@@ -115,6 +116,7 @@ define_disks () {
     dir=$1
     shift
     disks=($@)
+    echo
     PS3="Select disk to install $dir on: "
     select disk in "${disks[@]}"; do
         echo $disk | cut -d '(' -f 1
