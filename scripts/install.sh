@@ -4,12 +4,12 @@
 # Last updated 11.05.2022
 
 # Custom script to install arch and all required packages and configs.
-# Eventually I might create an archiso with calamares to replace this process.
+# Eventually I might create an archiso with calamares to replace this process but this is a learning experience
 
 # CONVENTIONS TO REMEMBER
 # use local variables within functions
 # naming - run_function, my_variable, MY_CONSTANT
-# set statements and constants -> functions -> main function
+# set statements and constants -> functions -> main function -> run main
 
 # Set ANSI Colors (FG & BG)
 readonly BLACK="$(printf '\033[30m')"

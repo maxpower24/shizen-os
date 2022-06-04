@@ -18,7 +18,7 @@ readonly WHITEBG="$(printf '\033[47m')"
 
 # Set other constants
 readonly GIT_REPO="maxpower24/shizen-os"
-readonly GIT_BRANCH="vb_update"
+readonly GIT_BRANCH="main"
 
 # Displays the banner
 banner () {
@@ -40,55 +40,51 @@ banner () {
 }
 
 var_input () {
-    local retry
-    local disk
+    # Set local variables used by this and downstream functions
+    local save_settings
+    local seperate_home
     local disks
-    local root_disk
-    local home_disk
+    local disk
 
-    while $retry; do
+    save_settings=false
+
+    # Get user input for variables such as username, hostname, disks, etc... Will loop unless settings are confirmed by user.
+    while [[ $save_settings != true ]]; do
         read -r -p 'Enter username: ' username
         read -r -p 'Enter hostname: ' hostname
 
-        disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
+        optional_packages=$(user_query "Install optional packages? [y/N]: ")
+        reinstall=$(user_query "Reinstall from existing encrypted Arch installation? [y/N]: ")
+        seperate_home=$(user_query "Install /home on a seperate disk to /root? [y/N]: ")
 
-        PS3='Select disk to install root dir on: '
+        disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
+        PS3='Select disk to install /root on: ' # Could put this block in it's own function since it's repeated, but how could I unset?
         select disk in "${disks[@]}"; do
             root_disk=$(echo $disk | cut -d '(' -f 1)
             unset 'disks[REPLY-1]'
             break
         done
-
-        while [[ $REPLY != [YyNn]* ]]; do
-            read -p 'Reinstall from existing Arch install (y/n)? ' 
-            if [[ $REPLY == [Yy]* ]]; then
-                reinstall=true
-            fi
+        if [[ $seperate_home == true ]]; do
+            PS3='Select disk to install /home on: '
+            select disk in "${disks[@]}"; do
+                home_disk=$(echo $disk | cut -d '(' -f 1)
+                unset 'disks[REPLY-1]'
+                break
+            done
         done
-        unset REPLY
-
-        while [[ $REPLY != [YyNn]* ]]; do
-            read -p 'Install OpenSSH server (y/n)? ' 
-            if [[ $REPLY == [Yy]* ]]; then
-                install_ssh=true
-            fi
-        done
-        unset REPLY
 
         echo
         echo "Username: $username"
         echo "Hostname: $hostname"
-        echo "Install root dir on: $root_disk"
+        echo "Install optional packages: $optional_packages"
         echo "Reinstall: $reinstall"
-        echo "Install OpenSSH: $install_ssh"
+        echo "Install /root on: $root_disk"
+        if [[ $seperate_home ==true ]]; do
+            echo "Install /home on: $home_disk"
+        done
         echo
 
-        while [[ $REPLY != [YyNn]* ]]; do
-            read -p "Are these settings correct (y/n)? "
-            if [[ $REPLY == [Yy]* ]]; then
-                retry=false
-            fi
-        done
+        save_settings=$(user_query "Are these settings correct? [y/N]: ")
     done
 
     echo
@@ -97,38 +93,32 @@ var_input () {
 }
 
 user_query () {
+    # Function for getting user input with true or false output.
     local response
-    read -r -p "${1:-Are you sure? [y/N]: }" response
-    response=${response,,} # to lowercase
-    if [[ $response =~ ^(yes|y)$ ]]; then
-        echo true
-    else
-        echo false
-    fi    
+    while [[ $REPLY != [YyNn]* ]]; do
+        read -r -p "${1:-Are you sure? [y/N]: }" response
+        response=${response,,} # to lowercase
+        if [[ $response =~ ^(yes|y)$ ]]; then
+            echo true
+        else
+            echo false
+        fi
+    done
+    unset REPLY  
 }
 
 # The meat and potatoes
 main () {
+    # Set local variables used by this and downstream functions
     local username
     local hostname
     local optional_packages
     local reinstall
-    local testvar
+    local root_disk
+    local home_disk
 
-    testvar=$(user_query "test123")
-    #echo $testvar
-
-    #testvar=$(user_query)
-    if [[ $testvar == true ]]; then
-        echo "true1"
-    else
-        echo "false1"
-    fi
-
-    
-    #banner
-    #var_test
-    #var_input
+    banner
+    var_input
     #if $reinstall; then
     #    wipe_disks
     #else
