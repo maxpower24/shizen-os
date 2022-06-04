@@ -64,14 +64,14 @@ var_input () {
             unset 'disks[REPLY-1]'
             break
         done
-        if [[ $seperate_home == true ]]; do
+        if [[ $seperate_home == true ]]; then
             PS3='Select disk to install /home on: '
             select disk in "${disks[@]}"; do
                 home_disk=$(echo $disk | cut -d '(' -f 1)
                 unset 'disks[REPLY-1]'
                 break
             done
-        done
+        fi
 
         echo
         echo "Username: $username"
@@ -79,9 +79,9 @@ var_input () {
         echo "Install optional packages: $optional_packages"
         echo "Reinstall: $reinstall"
         echo "Install /root on: $root_disk"
-        if [[ $seperate_home == true ]]; do
+        if [[ $seperate_home == true ]]; then
             echo "Install /home on: $home_disk"
-        done
+        fi
         echo
 
         save_settings=$(user_query "Are these settings correct? [y/N]: ")
