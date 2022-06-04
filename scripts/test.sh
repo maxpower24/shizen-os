@@ -58,6 +58,7 @@ var_input () {
         seperate_home=$(user_query "Install /home on a seperate disk to /root? [y/N]: ")
 
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
+        echo
         PS3='Select disk to install /root on: ' # Could put this block in it's own function since it's repeated, but how could I unset?
         select disk in "${disks[@]}"; do
             root_disk=$(echo $disk | cut -d '(' -f 1)
@@ -65,6 +66,7 @@ var_input () {
             break
         done
         if [[ $seperate_home == true ]]; then
+            echo
             PS3='Select disk to install /home on: '
             select disk in "${disks[@]}"; do
                 home_disk=$(echo $disk | cut -d '(' -f 1)
