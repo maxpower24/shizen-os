@@ -8,8 +8,9 @@
 
 # CONVENTIONS TO REMEMBER
 # use local variables within functions
-# naming - run_function, my_variable, MY_CONSTANT
+# naming - run_function, my_variable, MY_CONSTANT, _eval_variable
 # set statements and constants -> functions -> main function -> run main
+# functions should return some values instead of modifying global variables
 
 # Set ANSI Colors (FG & BG)
 readonly BLACK="$(printf '\033[30m')"
@@ -34,7 +35,7 @@ readonly GIT_REPO="maxpower24/shizen-os"
 readonly GIT_BRANCH="vb_update"
 
 # Displays the banner
-banner () {
+display_banner () {
     clear
     cat <<- _EOF_
 		${GREEN}┌─────────────────────────────────────┐
@@ -48,71 +49,114 @@ banner () {
 		${ORANGE}[*] ${CYAN}Branch: ${GIT_BRANCH}
 
 		Welcome...
-
 	_EOF_
 }
 
-var_input () {
-    local retry
-    local line
-    local lines
-    local disk
+# Function to define settings used by the installation via user input
+define_settings () {
+    # Declare local variables used by this and downstream functions
+    local save_settings
     local disks
-    local answer
-    
-    lines=($(fdisk -l | grep "Disk /" | awk '{print $2}' | sed 's/:$//'))
+    local index
 
-    while $retry; do
-        read -p 'Enter username: ' username
-        read -p 'Enter hostname: ' hostname
+    save_settings=false
 
-        for line in ${lines[@]}; do
-            disk=$(echo $line | sed 's/:/: /g')
-            disks+=("$disk")
-        done
+    # Get user input for variables such as username, hostname, disks, etc... Will loop unless settings are confirmed by user.
+    while [[ $save_settings != true ]]; do
+        echo
+        read -r -p 'Enter username: ' username
+        read -r -p 'Enter hostname: ' hostname
 
-        PS3='Select disk to install root dir on: '
-        select answer in "${disks[@]}"; do
-            root_disk=$(echo $answer | cut -d ' ' -f 1 | sed 's/.$//')
-            unset 'disks[REPLY-1]'
-            break
-        done
+        # Use ask_user function to define variables with true/false.
+        optional_packages=$(ask_user "Install optional packages? [y/N]: ")
+        reinstall=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
+        seperate_home=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
 
-        while [[ $REPLY != [YyNn]* ]]; do
-            read -p 'Reinstall from existing Arch install (y/n)? ' 
-            if [[ $REPLY == [Yy]* ]]; then
-                reinstall=true
-            fi
-        done
-        unset REPLY
-
-        while [[ $REPLY != [YyNn]* ]]; do
-            read -p 'Install OpenSSH server (y/n)? ' 
-            if [[ $REPLY == [Yy]* ]]; then
-                install_ssh=true
-            fi
-        done
-        unset REPLY
+        # Get list of disks and pass on to function to define root disk. If user wants a seperate home disk, unset the root disk and pass remaining ones on to the function to define.
+        disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
+        root_disk=$(define_disk "/root" "${disks[@]}" | tr -d '\n')
+        if [[ $seperate_home == true ]]; then
+            for index in "${!disks[@]}"; do
+                if [[ "${disks[$index]}" == *"${root_disk}"* ]]; then
+                    unset 'disks[index]'
+                fi
+            done
+            home_disk=$(define_disk "/home" "${disks[@]}" | tr -d '\n')
+        fi
 
         echo
         echo "Username: $username"
         echo "Hostname: $hostname"
-        echo "Install root dir on: $root_disk"
+        echo "Install optional packages: $optional_packages"
         echo "Reinstall: $reinstall"
-        echo "Install OpenSSH: $install_ssh"
+        echo "Install /root on: $root_disk"
+        if [[ $seperate_home == true ]]; then
+            echo "Install /home on: $home_disk"
+        fi
         echo
 
-        while [[ $REPLY != [YyNn]* ]]; do
-            read -p "Are these settings correct (y/n)? "
-            if [[ $REPLY == [Yy]* ]]; then
-                retry=false
-            fi
-        done
+        save_settings=$(ask_user "Are these settings correct? [y/N]: ")
     done
 
     echo
     echo "${ORANGE}[*] ${GREEN}Installation started...${WHITE}"
     echo
+}
+
+# Function for getting user input with true or false output. If a question is input as a parameter it will use that, otherwise default one is defined
+ask_user () {
+    # Define local variables used by this and downstream functions
+    local response
+
+    while [[ $response != [yn]* ]]; do
+        read -r -p "${1:-Are you sure? [y/N]: }" response
+        response=${response,,} # to lowercase
+    done
+    if [[ $response =~ ^(yes|y)$ ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+# Function to assign disks to a variable.
+define_disk () {
+    # Define local variables used by this and downstream functions
+    local dir
+    local disk_arr
+    local disk
+
+    # Define the directory from first parameter, shift all params to the left and all remaining are part of the disk array
+    dir=$1
+    shift
+    disk_arr=($@)
+
+    # Select disk from given array
+    echo
+    PS3="Select disk to install $dir on: "
+    select disk in "${disk_arr[@]}"; do
+        echo $disk | cut -d '(' -f 1
+        break
+    done
+}
+
+# Remove everything from /root and optionally /home
+wipe_disks () {
+    local wipe_home
+
+    wipe_home=false
+    if [[ $seperate_home == true ]]; then
+        wipe_home=$(user_query "Wipe /home as well? [y/N]: ")
+    fi
+    get_partitions
+    cryptsetup open $root_part cryptroot
+    mount /dev/mapper/cryptroot /mnt
+    if [[ $wipe_home == true ]]; then
+        cryptsetup open $home_part crypthome
+        mount /dev/mapper/crypthome /mnt/home
+    fi
+    mount $boot_part /mnt/boot
+    cd /mnt && rm -r *
 }
 
 prep_disks () {
@@ -137,12 +181,13 @@ prep_disks () {
     mount $boot_part /mnt/boot
 }
 
-wipe_disks () {
-    get_partitions
-    cryptsetup open $root_part cryptroot
-    mount /dev/mapper/cryptroot /mnt
-    mount $boot_part /mnt/boot
-    cd /mnt && rm -r *
+# Assign partition numbers
+get_partitions () {
+    if [[ $root_disk == *nvme* ]]; then
+        root_disk=$root_disk'p'
+    fi
+    boot_part=$root_disk'1'
+    root_part=$root_disk'2'
 }
 
 installer () {
@@ -176,22 +221,19 @@ installer () {
     rm /mnt/rootinstall.sh
 }
 
-get_partitions () {
-    # Assign partition numbers
-    if [[ $root_disk == *nvme* ]]; then
-        root_disk=$root_disk'p'
-    fi
-    boot_part=$root_disk'1'
-    root_part=$root_disk'2'
-}
-
 # The meat and potatoes
 main () {
-    local install_ssh
+   # Declare local variables used by this and downstream functions
+    local username
+    local hostname
+    local optional_packages
     local reinstall
-    
-    banner
-    var_input
+    local seperate_home
+    local root_disk
+    local home_disk
+
+    display_banner
+    define_settings
     #if $reinstall; then
     #    wipe_disks
     #else

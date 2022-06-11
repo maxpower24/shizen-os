@@ -91,7 +91,6 @@ define_settings () {
 }
 
 # Function for getting user input with true or false output. If a question is input as a parameter it will use that, otherwise default one is defined
-# If the user enters an invalid entry it defines as false and asks again, but then all answers are added to the variable. FIX THIS
 ask_user () {
     # Define local variables used by this and downstream functions
     local response
@@ -128,6 +127,11 @@ define_disk () {
     done
 }
 
+test_func () {
+    settings[test]='test123'
+}
+
+
 # The meat and potatoes
 main () {
     # Declare local variables used by this and downstream functions
@@ -138,8 +142,12 @@ main () {
     local root_disk
     local home_disk
 
-    display_banner
-    define_settings
+    declare -A settings
+
+    test_func
+    echo ${settings[test]}
+    #display_banner
+    #define_settings
     #if $reinstall; then
     #    wipe_disks
     #else
