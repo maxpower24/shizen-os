@@ -40,45 +40,45 @@ display_banner () {
 
 # Function to define settings used by the installation via user input
 define_settings () {
-    # Declare local variables used by this and downstream functions
-    local save_settings
-    local seperate_home
+    # Declare local variables and array
+    local save_settings=false
     local disks
     local index
 
-    save_settings=false
+    declare -n settings="$1"
 
     # Get user input for variables such as username, hostname, disks, etc... Will loop unless settings are confirmed by user.
     while [[ $save_settings != true ]]; do
         echo
-        read -r -p 'Enter username: ' username
-        read -r -p 'Enter hostname: ' hostname
+        read -r -p 'Enter username: ' settings[username]
+        read -r -p 'Enter hostname: ' settings[hostname]
 
         # Use ask_user function to define variables with true/false.
-        optional_packages=$(ask_user "Install optional packages? [y/N]: ")
-        reinstall=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
-        seperate_home=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
+        settings[optional_packages]=$(ask_user "Install optional packages? [y/N]: ")
+        settings[reinstall]=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
+        settings[seperate_home]=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
 
         # Get list of disks and pass on to function to define root disk. If user wants a seperate home disk, unset the root disk and pass remaining ones on to the function to define.
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
-        root_disk=$(define_disk "/root" "${disks[@]}" | tr -d '\n')
-        if [[ $seperate_home == true ]]; then
+        settings[root_disk]=$(define_disk "/root" "${disks[@]}" | tr -d '\n')
+        if [[ ${settings[seperate_home]} == true ]]; then
             for index in "${!disks[@]}"; do
-                if [[ "${disks[$index]}" == *"${root_disk}"* ]]; then
+                if [[ "${disks[$index]}" == *"${settings[root_disk]}"* ]]; then
                     unset 'disks[index]'
                 fi
             done
-            home_disk=$(define_disk "/home" "${disks[@]}" | tr -d '\n')
+            settings[home_disk]=$(define_disk "/home" "${disks[@]}" | tr -d '\n')
         fi
 
+        # Print out current settings and confirm with user
         echo
-        echo "Username: $username"
-        echo "Hostname: $hostname"
-        echo "Install optional packages: $optional_packages"
-        echo "Reinstall: $reinstall"
-        echo "Install /root on: $root_disk"
-        if [[ $seperate_home == true ]]; then
-            echo "Install /home on: $home_disk"
+        echo "Username: ${settings[username]}"
+        echo "Hostname: ${settings[hostname]}"
+        echo "Install optional packages: ${settings[optional_packages]}"
+        echo "Reinstall: ${settings[reinstall]}"
+        echo "Install /root on: ${settings[root_disk]}"
+        if [[ ${settings[seperate_home]} == true ]]; then
+            echo "Install /home on: ${settings[home_disk]}"
         fi
         echo
 
@@ -127,51 +127,17 @@ define_disk () {
     done
 }
 
-test_func () {
-    declare -A _testarr
-    _testarr=$1
-    local myvalue='test12345test'
-    local myvalue2='estestes'
-    if [[ "$_testarr" ]]; then
-        eval $_testarr[test]="'$myvalue'"
-        eval $_testarr[test1]="'$myvalue2'"
-    else
-        echo "$myvalue"
-    fi
-}
-
-foo () {
-    declare -n testarr="$1"
-
-            read -r -p 'Enter username: ' testarr[username]
-        read -r -p 'Enter hostname: ' testarr[hostname]
-
-        # Use ask_user function to define variables with true/false.
-        testarr[optional_packages]=$(ask_user "Install optional packages? [y/N]: ")
-        testarr[reinstall]=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
-        testarr[seperate_home]=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
-}
-
-
 # The meat and potatoes
 main () {
-    # Declare local variables used by this and downstream functions
-    local username
-    local hostname
-    local optional_packages
-    local reinstall
-    local root_disk
-    local home_disk
-    
-    declare -A settings
+    # Declare settings assosciative array
+    declare -A inst_settings
 
-    foo settings
+    display_banner
+    define_settings settings
+
     for key in "${!settings[@]}"; do
         printf '%s = %s\n' "$key" "${settings[$key]}"
     done
-
-    #display_banner
-    #define_settings
     #if $reinstall; then
     #    wipe_disks
     #else
