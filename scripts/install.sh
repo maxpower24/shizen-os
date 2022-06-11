@@ -32,7 +32,7 @@ readonly WHITEBG="$(printf '\033[47m')"
 
 # Set other constants
 readonly GIT_REPO="maxpower24/shizen-os"
-readonly GIT_BRANCH="vb_update"
+readonly GIT_BRANCH="main"
 
 # Displays the banner
 display_banner () {
