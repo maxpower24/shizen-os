@@ -134,15 +134,11 @@ main () {
 
     display_banner
     define_settings inst_settings
-
-    for key in "${!settings[@]}"; do
-        printf '%s = %s\n' "$key" "${settings[$key]}"
-    done
-    #if $reinstall; then
-    #    wipe_disks
-    #else
-    #    prep_disks
-    #fi
+    if inst_settings[reinstall]; then
+        echo "wipe_disks"
+    else
+        echo "prep_disks"
+    fi
     #installer
 #
     ## Print errors and check for reboot
