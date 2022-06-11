@@ -128,7 +128,28 @@ define_disk () {
 }
 
 test_func () {
-    settings[test]='test123'
+    declare -A _testarr
+    _testarr=$1
+    local myvalue='test12345test'
+    local myvalue2='estestes'
+    if [[ "$_testarr" ]]; then
+        eval $_testarr[test]="'$myvalue'"
+        eval $_testarr[test1]="'$myvalue2'"
+    else
+        echo "$myvalue"
+    fi
+}
+
+foo () {
+    declare -n testarr="$1"
+
+            read -r -p 'Enter username: ' testarr[username]
+        read -r -p 'Enter hostname: ' testarr[hostname]
+
+        # Use ask_user function to define variables with true/false.
+        testarr[optional_packages]=$(ask_user "Install optional packages? [y/N]: ")
+        testarr[reinstall]=$(ask_user "Reinstall from existing encrypted Arch installation? [y/N]: ")
+        testarr[seperate_home]=$(ask_user "Install /home on a seperate disk to /root? [y/N]: ")
 }
 
 
@@ -141,12 +162,14 @@ main () {
     local reinstall
     local root_disk
     local home_disk
-    local settings
-
+    
     declare -A settings
 
-    test_func
-    echo ${settings[test]}
+    foo settings
+    for key in "${!settings[@]}"; do
+        printf '%s = %s\n' "$key" "${settings[$key]}"
+    done
+
     #display_banner
     #define_settings
     #if $reinstall; then
