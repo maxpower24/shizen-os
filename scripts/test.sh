@@ -133,7 +133,7 @@ main () {
     declare -A inst_settings
 
     display_banner
-    define_settings settings
+    define_settings inst_settings
 
     for key in "${!settings[@]}"; do
         printf '%s = %s\n' "$key" "${settings[$key]}"
