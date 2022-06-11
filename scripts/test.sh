@@ -1,3 +1,17 @@
+#!/bin/bash
+
+# Arch Install Script by maxpower24
+# Last updated 11.05.2022
+
+# Custom script to install arch and all required packages and configs.
+# Eventually I might create an archiso with calamares to replace this process but this is a learning experience
+
+# CONVENTIONS TO REMEMBER
+# use local variables within functions
+# naming - run_function, my_variable, MY_CONSTANT, _eval_variable
+# set statements and constants -> functions -> main function -> run main
+# functions should return some values instead of modifying global variables
+
 # Set ANSI Colors (FG & BG)
 readonly BLACK="$(printf '\033[30m')"
 readonly RED="$(printf '\033[31m')"
@@ -61,7 +75,7 @@ define_settings () {
         # Get list of disks and pass on to function to define root disk. If user wants a seperate home disk, unset the root disk and pass remaining ones on to the function to define.
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
         settings[root_disk]=$(define_disk "/root" "${disks[@]}" | tr -d '\n')
-        if ${settings[seperate_home]}; then
+        if [[ ${settings[seperate_home]} == true ]]; then
             for index in "${!disks[@]}"; do
                 if [[ "${disks[$index]}" == *"${settings[root_disk]}"* ]]; then
                     unset 'disks[index]'
@@ -77,7 +91,7 @@ define_settings () {
         echo "Install optional packages: ${settings[optional_packages]}"
         echo "Reinstall: ${settings[reinstall]}"
         echo "Install /root on: ${settings[root_disk]}"
-        if ${settings[seperate_home]}; then
+        if [[ ${settings[seperate_home]} == true ]]; then
             echo "Install /home on: ${settings[home_disk]}"
         fi
         echo
@@ -127,6 +141,92 @@ define_disk () {
     done
 }
 
+# Remove everything from /root and optionally /home
+wipe_disks () {
+    local seperate_home=$1
+    local root_disk=$2
+    local home_disk=$3
+    local wipe_home
+
+    declare -A partitions
+
+    if [[ $seperate_home == true ]]; then
+        wipe_home=$(ask_user "${ORANGE}INPUT REQUIRED: ${GREEN}Wipe /home as well? [y/N]: ${WHITE}")
+    fi
+    echo $seperate_home $root_disk $home_disk
+    #get_partitions
+    #cryptsetup open $root_part cryptroot
+    #mount /dev/mapper/cryptroot /mnt
+    #if [[ $wipe_home == true ]]; then
+    #    cryptsetup open $home_part crypthome
+    #    mount /dev/mapper/crypthome /mnt/home
+    #fi
+    #mount $boot_part /mnt/boot
+    #cd /mnt && rm -r *
+}
+
+prep_disks () {
+    # Partition the drives for UEFI on GPT.
+    parted -s -a optimal $root_disk \
+        mklabel gpt \
+        mkpart "'"'"EFI system partition"'"'" fat32 1MiB 512MiB \
+        mkpart "'"'"root partition"'"'" ext4 512MiB 100% \
+        set 1 esp on
+
+    get_partitions
+
+    # Format and encrypt partitions
+    cryptsetup -y -v luksFormat $root_part
+    cryptsetup open $root_part cryptroot
+    mkfs.ext4 /dev/mapper/cryptroot
+    mkfs.fat -F 32 $boot_part
+
+    # Make directories and mount the new partitions on "/"", "/efi" and "/home"
+    mount /dev/mapper/cryptroot /mnt
+    mkdir /mnt/boot /mnt/home
+    mount $boot_part /mnt/boot
+}
+
+# Assign partition numbers
+get_partitions () {
+    if [[ $root_disk == *nvme* ]]; then
+        root_disk=$root_disk'p'
+    fi
+    boot_part=$root_disk'1'
+    root_part=$root_disk'2'
+}
+
+installer () {
+    local raw_git_url="https://raw.githubusercontent.com/$GIT_REPO/$GIT_BRANCH"
+
+    # Update the system clock
+    timedatectl set-ntp true
+
+    # Copy the mirror list
+    curl -L $raw_git_url/etc/pacman.d/mirrorlist -o /etc/pacman.d/mirrorlist
+
+    # Enable multilib repo in live environment for 32-bit packages
+    curl -L $raw_git_url/etc/pacman.conf -o /etc/pacman.conf
+
+    # Install pacstrap packages
+    curl -L $raw_git_url/packages -o packages
+    if $install_ssh; then
+        echo -e "\nopenssh" >> packages
+    fi
+    sed -i '/^[[:blank:]]*#/d;s/#.*//' packages
+    sleep 2
+    pacstrap /mnt - < packages
+
+    # Generate the fstab file to save mounted drives
+    genfstab -U /mnt > /mnt/etc/fstab
+
+    # Change root and run setup script
+    curl -L $raw_git_url/scripts/rootinstall.sh -o /mnt/rootinstall.sh
+    chmod +x /mnt/rootinstall.sh
+    arch-chroot /mnt ./rootinstall.sh $username $hostname $GIT_REPO $GIT_BRANCH $install_ssh $root_part
+    rm /mnt/rootinstall.sh
+}
+
 # The meat and potatoes
 main () {
     # Declare settings assosciative array
@@ -134,10 +234,11 @@ main () {
 
     display_banner
     define_settings inst_settings
-    if ${inst_settings[reinstall]}; then
-        echo "wipe_disks"
+    if [[ ${inst_settings[reinstall]} == true ]]; then
+        wipe_disks ${inst_settings[seperate_home]} ${inst_settings[root_disk]} ${inst_settings[home_disk]}
     else
-        echo "prep_disks"
+        echo "prepdisk"
+        #prep_disks
     fi
     #installer
 #

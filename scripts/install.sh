@@ -143,21 +143,24 @@ define_disk () {
 
 # Remove everything from /root and optionally /home
 wipe_disks () {
+    local seperate_home=$1
+    local root_disk=$2
+    local home_disk=$3
     local wipe_home
 
-    wipe_home=false
     if [[ $seperate_home == true ]]; then
-        wipe_home=$(user_query "Wipe /home as well? [y/N]: ")
+        wipe_home=$(user_query "$(ORANGE)INPUT REQUIRED: $(GREEN)Wipe /home as well? [y/N]: $(WHITE)")
     fi
-    get_partitions
-    cryptsetup open $root_part cryptroot
-    mount /dev/mapper/cryptroot /mnt
-    if [[ $wipe_home == true ]]; then
-        cryptsetup open $home_part crypthome
-        mount /dev/mapper/crypthome /mnt/home
-    fi
-    mount $boot_part /mnt/boot
-    cd /mnt && rm -r *
+    echo $seperate_home $root_disk $home_disk
+    #get_partitions
+    #cryptsetup open $root_part cryptroot
+    #mount /dev/mapper/cryptroot /mnt
+    #if [[ $wipe_home == true ]]; then
+    #    cryptsetup open $home_part crypthome
+    #    mount /dev/mapper/crypthome /mnt/home
+    #fi
+    #mount $boot_part /mnt/boot
+    #cd /mnt && rm -r *
 }
 
 prep_disks () {
@@ -229,11 +232,11 @@ main () {
 
     display_banner
     define_settings inst_settings
-    #if $reinstall; then
-    #    wipe_disks
-    #else
-    #    prep_disks
-    #fi
+    if [[ ${inst_settings[reinstall]} == true ]]; then
+        wipe_disks ${inst_settings[seperate_home]} ${inst_settings[root_disk]} ${inst_settings[home_disk]}
+    else
+        #prep_disks
+    fi
     #installer
 #
     ## Print errors and check for reboot
