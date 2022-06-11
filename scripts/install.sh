@@ -56,6 +56,7 @@ display_banner () {
 define_settings () {
     # Declare local variables used by this and downstream functions
     local save_settings
+    local seperate_home
     local disks
     local index
 
@@ -228,7 +229,6 @@ main () {
     local hostname
     local optional_packages
     local reinstall
-    local seperate_home
     local root_disk
     local home_disk
 
