@@ -141,6 +141,7 @@ main () {
     local reinstall
     local root_disk
     local home_disk
+    local settings
 
     declare -A settings
 
