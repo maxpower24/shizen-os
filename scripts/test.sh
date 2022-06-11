@@ -153,8 +153,7 @@ wipe_disks () {
     if [[ $seperate_home == true ]]; then
         wipe_home=$(ask_user "${ORANGE}INPUT REQUIRED: ${GREEN}Wipe /home as well? [y/N]: ${WHITE}")
     fi
-    echo $seperate_home $root_disk $home_disk
-    #get_partitions
+    get_partitions $root_disk $home_disk
     #cryptsetup open $root_part cryptroot
     #mount /dev/mapper/cryptroot /mnt
     #if [[ $wipe_home == true ]]; then
@@ -189,6 +188,7 @@ prep_disks () {
 
 # Assign partition numbers
 get_partitions () {
+    
     if [[ $root_disk == *nvme* ]]; then
         root_disk=$root_disk'p'
     fi
