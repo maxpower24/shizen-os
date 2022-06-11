@@ -61,7 +61,7 @@ define_settings () {
         # Get list of disks and pass on to function to define root disk. If user wants a seperate home disk, unset the root disk and pass remaining ones on to the function to define.
         disks=($(fdisk -l | grep "Disk /" | awk '{print $2 $3 $4}' | sed -e 's/,/\)/g' -e 's/\:/\(/g'))
         settings[root_disk]=$(define_disk "/root" "${disks[@]}" | tr -d '\n')
-        if [[ ${settings[seperate_home]} == true ]]; then
+        if ${settings[seperate_home]}; then
             for index in "${!disks[@]}"; do
                 if [[ "${disks[$index]}" == *"${settings[root_disk]}"* ]]; then
                     unset 'disks[index]'
@@ -77,7 +77,7 @@ define_settings () {
         echo "Install optional packages: ${settings[optional_packages]}"
         echo "Reinstall: ${settings[reinstall]}"
         echo "Install /root on: ${settings[root_disk]}"
-        if [[ ${settings[seperate_home]} == true ]]; then
+        if ${settings[seperate_home]}; then
             echo "Install /home on: ${settings[home_disk]}"
         fi
         echo
@@ -134,7 +134,7 @@ main () {
 
     display_banner
     define_settings inst_settings
-    if inst_settings[reinstall]; then
+    if ${inst_settings[reinstall]}; then
         echo "wipe_disks"
     else
         echo "prep_disks"
