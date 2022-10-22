@@ -14,7 +14,7 @@ MAGENTABG="$(printf '\033[45m')"  CYANBG="$(printf '\033[46m')"  WHITEBG="$(prin
 
 # Set global variables
 git_repo="maxpower24/shizen-os"
-git_branch="stable"
+git_branch="main"
 raw_git_url="https://raw.githubusercontent.com/$git_repo/$git_branch"
 install_ssh=false
 reinstall=false
