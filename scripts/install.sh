@@ -156,12 +156,15 @@ installer () {
     timedatectl set-ntp true
 
     # Copy the mirror list
+    sleep 2
     curl -L $raw_git_url/etc/pacman.d/mirrorlist -o /etc/pacman.d/mirrorlist
 
     # Enable multilib repo in live environment for 32-bit packages
+    sleep 2
     curl -L $raw_git_url/etc/pacman.conf -o /etc/pacman.conf
 
     # Install pacstrap packages
+    sleep 2
     curl -L $raw_git_url/packages -o packages
     if $install_ssh; then
         echo -e "\nopenssh" >> packages
