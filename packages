@@ -1,0 +1,124 @@
+# Package list for use in pacstrap.
+
+# - Base Packages -
+#amd-ucode
+base
+base-devel
+#dhcpcd
+efibootmgr
+intel-ucode
+linux
+linux-firmware
+ntfs-3g
+polkit
+zsh
+
+# - Xorg -
+xorg-server
+xorg-xkill
+xorg-xrandr
+xf86-input-synaptics
+
+# - Nvidia Drivers -
+#nvidia
+#nvidia-utils
+#lib32-nvidia-utils
+
+#Intel Drivers
+mesa
+lib32-mesa
+
+# - LightDM -
+lightdm
+lightdm-gtk-greeter
+
+# - Desktop Environment -
+dmenu
+i3-gaps
+i3status
+i3lock
+xss-lock
+picom
+rofi
+#polybar
+
+# - Programs -
+
+# Audio
+pulseaudio
+pulseaudio-alsa
+pulseaudio-bluetooth
+pavucontrol
+
+# Bluetooth
+bluez
+bluez-utils
+
+# Files
+p7zip
+ranger
+
+# Fonts
+lib32-fontconfig
+ttf-liberation
+wqy-zenhei
+
+# Gaming
+steam
+discord
+
+# Images
+feh
+w3m
+
+# Multimedia
+mpd
+mpv
+ncmpcpp
+youtube-dl
+
+# Network / Internet
+firefox
+networkmanager
+qbittorrent
+ufw
+
+# System
+git
+jre-openjdk
+go
+python3
+#python-pip
+gnome-keyring
+xdg-user-dirs
+
+# Text Editors
+neovim
+vscode
+
+# Terminal
+kitty
+zsh-completions
+
+# Utilities
+blender
+calcurse
+gimp
+keepassxc
+newsboat
+#obs-studio
+arch-wiki-lite
+arch-wiki-docs
+dialog
+man-db
+man-pages
+
+
+# - Grub -
+grub
+
+
+
+# Dependencies
+go
+network-manger-applet
