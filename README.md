@@ -1,6 +1,8 @@
 # shizen-os
 If you're not me you can stop reading through my crappy little arch project. This is only public so I can access the files easily during install.
 
+test
+
 ## Drive Preperation
 Below are manual steps required to format and cryptographically erase data. Should only need to be done once on a device if I don't remove encryption.
 
