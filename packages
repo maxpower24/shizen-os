@@ -1,12 +1,12 @@
 # Package list for use in pacstrap.
 
 # - Base Packages -
-#amd-ucode
+amd-ucode
 base
 base-devel
 #dhcpcd
 efibootmgr
-intel-ucode
+#intel-ucode
 linux
 linux-firmware
 ntfs-3g
@@ -20,9 +20,9 @@ xorg-xrandr
 xf86-input-synaptics
 
 # - Nvidia Drivers -
-#nvidia
-#nvidia-utils
-#lib32-nvidia-utils
+nvidia
+nvidia-utils
+lib32-nvidia-utils
 
 #Intel Drivers
 mesa
