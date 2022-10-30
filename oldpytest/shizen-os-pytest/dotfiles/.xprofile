@@ -1,0 +1,10 @@
+# Set monitor position, rotation, resolution and refresh rates
+xrandr --output eDP-1 --mode 1920x1080 --primary
+#xrandr --output DP-2 --mode 2560x1440 --pos 0x240 --rate 165 --primary
+#xrandr --output DP-4 --mode 1920x1080 --pos 2560x0 --rate 144 --rotate left
+
+# Set wallpapers
+feh --bg-fill ~/pics/wallpapers/mask.png
+#feh --bg-fill ~/pics/wallpapers/temple.jpeg ~/pics/wallpapers/mountains.jpg
+
+export EDITOR=/usr/bin/nvim

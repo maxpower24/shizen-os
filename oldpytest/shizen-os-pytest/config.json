@@ -1,0 +1,14 @@
+{
+    "disks": {
+        "home": "test",
+        "root": "nvme0n1"
+    },
+    "homedisk": true,
+    "hostname": "y",
+    "optpackages": true,
+    "parthome": "part2",
+    "partroot": "part1",
+    "reinstall": true,
+    "username": "y",
+    "wipehome": true
+}
